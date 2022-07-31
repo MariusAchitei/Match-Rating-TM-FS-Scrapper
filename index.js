@@ -38,7 +38,8 @@ app.post('/SuperLiga/matches', (req, res) => {
 
 app.get('/SuperLiga/matches/newMatch', async (req, res) => {
     const liga1 = await League.findOne({ name: 'SuperLiga' });
-    console.log(await liga1.populate('teams'));
+    //console.log(await liga1.populate('teams'));
+    await liga1.populate('teams')
     res.render('newMatch', { liga1 })
 })
 
@@ -51,9 +52,9 @@ app.get('/SuperLiga/:teamId', async (req, res) => {
     res.render('ShowTeam', { echipa });
 })
 
-app.get('/api/:teamName', async (req, res) => {
-    const { teamName } = req.params;
-    const team = await Team.findOne({ name: teamName });
+app.get('/api/:teamId', async (req, res) => {
+    const { teamId } = req.params;
+    const team = await Team.findById(teamId);
     await team.populate('squad');
     res.json(team);
 

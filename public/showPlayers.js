@@ -8,9 +8,9 @@ function listenForSelect() {
     //     listaGazde.removeChild
     // }
     const listaGazde = this.parentElement.nextElementSibling;
-    console.log(this)
-    console.log(this.parentElement)
-    console.log(listaGazde)
+    // console.log(this)
+    // console.log(this.parentElement)
+    // console.log(listaGazde)
     listaGazde.innerHTML = '';
     const p = document.createElement('p');
     p.innerText = "Stelectati primul 11"
@@ -21,14 +21,15 @@ function listenForSelect() {
     fetch(`http://localhost:2000/api/${this.value}`)
         .then(response => { return response.json() })
         .then(data => {
-            listaGazde.removeChild
+            console.log(data)
             for (player of data.squad) {
-                //console.log('5555555555555')
                 const label = document.createElement('label');
                 const input = document.createElement('input');
                 input.type = 'checkbox';
                 label.innerText = player.first + ' ' + player.last;
-                input.name = player.first + ' ' + player.last;
+                const prefix = this.name.split('.')[0]
+                input.name = prefix + '.players';
+                input.value = player._id;
                 input.classList.add('form-check-input');
                 label.classList.add('form-check-label')
                 label.appendChild(input);
