@@ -1,0 +1,30 @@
+<% layout('layouts/boilerplate.ejs') -%> 
+
+    <h1><%= echipa.name %> </h1>
+    <img src="<%= echipa.logo %> " alt="">
+    <p>Pozitie in clasament: <%= echipa.tablePos %> </p>
+    <h3>Lot: (<%= echipa.squad.length %>) </h3>
+    <div class="row">
+        <% for(player of echipa.squad){ %>
+            <!-- <li><%= player.first + ' ' + player.last  %>---- <%= player.num %>     </li>
+            <img src="<%= player.photo %>" alt=""> -->
+            <div class="card mb-3" style="width: 18rem; margin-left:auto; margin-right:auto;">
+                <span style="position:absolute; font-size: 3rem"><%= player.num %></span>
+                <span style="position:absolute; top:4rem; font-size: 1rem"><%= player.position %></span>
+                <img src="<%= player.photo %>" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title"><%= player.first + ' ' + player.last  %></h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">An item</li>
+                    <li class="list-group-item">A second item</li>
+                    <li class="list-group-item">A third item</li>
+                </ul>
+                <div class="card-body">
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        <% } %>
+    </div> 

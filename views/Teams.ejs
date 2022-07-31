@@ -1,0 +1,16 @@
+<% layout('layouts/boilerplate.ejs') -%> 
+
+
+
+    <h1><%= liga1.name %> </h1>
+    <p><%= liga1.country %>'s <%= liga1.tier %> tier </p>
+    <ul>
+        <% for(team of liga1.teams){ %>
+            <li><a href="/<%= liga1.name %>/<%= team._id %>"><%= team.name %></a> </li>
+        <% } %>
+
+        
+
+
+    </ul>
+
