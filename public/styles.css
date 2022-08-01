@@ -1,0 +1,486 @@
+html {
+    font-family: 'Open Sans', sans-serif;
+    text-decoration: none;
+}
+
+body {
+    min-height: 100vh;
+    /* display: flex; */
+    /* justify-content: center; */
+    /* align-items: center; */
+}
+
+main {
+    margin-left:auto;
+    margin-right:auto;
+    color: #fff;
+    width: 50%;
+    max-width: 1000px;
+    border-radius: 2em;
+}
+
+
+ /* #region  TABELA DE SCOR */
+
+.tabela {
+    font-size: 1.8em;
+    margin: 15% 0;
+    border-radius: 2em;
+    background: #e81d1d;
+}
+
+.competitie {
+    text-align: center;
+    border-radius: 2em 2em 0 0;
+    background-color: #37003d;
+    padding: 0.7em 0;
+}
+
+.status1 {
+
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.status1>div {
+    background-color: #ca0d0d;
+    text-align: center;
+    padding: 0.5em 1.25em;
+    border-radius: 0 0 1em 1em;
+}
+
+.middle {
+    /* background-color: green; */
+    padding: 1.5em 3em 1em 3em;
+    display: flex;
+    align-items: center;
+}
+
+.scor-echipa1, .scor-echipa2 {
+    /* background-color: blanchedalmond; */
+    width: 50%;
+    padding: 1.3em 0.5em 1em;
+}
+.tabelaScor{
+    padding-top:10%;
+    text-align: center;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.scor-echipa1 {
+    margin-right: 2%;
+}
+
+.scor-echipa2 {
+    margin-left: 2%;
+}
+
+.scor-echipa1>div {
+    /* background-color: black; */
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
+.scor-echipa2>div {
+    /* background-color: blue; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.team-score>div {
+    background-color: aliceblue;
+    border-radius: 0.5em;
+    margin: 0 1em;
+    color: black;
+    padding: 0.5em;
+    font-size: 150%;
+    font-weight: bold;
+}
+
+.team-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50%;
+    width: 50%;
+    min-width: 50px;
+    max-width: 100px;
+    aspect-ratio: 1 / 1;
+    background-color: #fff;
+    border-radius: 50%;
+
+}
+
+.team-logo img {
+    flex: 1 1;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.status-ht {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ca0d0d;
+    padding: 0.5em 0;
+}
+
+.status-ht>div {
+    background-color: aliceblue;
+    border-radius: 0.5em;
+    margin: 0 1em;
+    color: black;
+    padding: 0.5em;
+    font-size: 75%;
+    font-weight: bold;
+}
+
+.status-ht>p {
+    color: #fdcf0c;
+    margin: 0 0.5em
+}
+
+.goluri {
+    padding: 1em 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.goluri-stanga {
+    /* padding: 0 1.5em; */
+    width: 50%;
+    text-align: right;
+    /* margin-right: 2em;
+    padding-right: 7em; */
+}
+
+.goluri-dreapta {
+    width: 50%;
+}
+
+.tabela ul {
+    list-style-image: url(/jucatori/rsz_icon.png);
+    width: 10px;
+}
+
+/* #endregion */
+
+/* #region SECTIUNE Rating*/
+
+.rating-section {
+    width: 100%;
+
+}
+
+.profil {
+    background: url(jucatori/red.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    border-radius: 1em;
+    padding: 5% 10%;
+    /* display: inline; */
+    display: flex;
+
+    margin-bottom: 10%;
+}
+
+.portar {
+    background: url(jucatori/purple.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+     
+}
+
+.antrenor {
+    background: url(jucatori/black.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;   
+}
+
+/* #region stanga */
+
+.profil-imagine {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid lightgrey;
+    flex: 1 1;
+    position: relative;
+}
+
+.pozitie {
+    position: absolute;
+    background-color: rgb(50, 46, 46);
+    top: 5%;
+    left: -10%;
+    border-radius: 0.5em;
+    padding: 0.7em 0.7em;
+
+    /* font-size: 1.5em; */
+}
+
+/* #endregion stanga */
+
+
+/* #region dreapta */
+
+
+.detalii {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 60%;
+    flex: 1.5 1.5;
+    padding-right: 10%;
+}
+
+.poza img {
+    width: 80%;
+    height: 80%;
+    aspect-ratio: 1 / 1.5;
+    object-fit: cover;
+    border-radius: 2em;
+}
+
+.detalii {
+    padding-left: 10%;
+}
+
+.info-top span:first-of-type {
+    text-transform: uppercase;
+    font-size: 2.2em;
+}
+
+.info-top span:last-of-type {
+    font-size: 1.7em;
+}
+
+.info-note {
+    /* height: 40%; */
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    flex-wrap: wrap;
+}
+form{
+    display: flex;
+    flex-wrap: wrap;
+
+    /* height: 100%;
+    width: 100%; */
+}
+form>label{
+    /* display: flex; */
+    flex-basis:15%;
+    flex-grow: 1;
+    /* max-width: 20%; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    text-align: center;
+    background-color: #fff;
+    color: black;
+    border: 2px solid black;
+    box-shadow: 2px 2px 9px 0px rgba(29,29,29,0.7);
+    font-size: 1.5em;
+    width: 55px;
+    height: 55px;
+    margin-top: 10px;
+    margin-right: 10px;
+    border-radius: 0.5em;
+    /* font-size: 1.5em;
+    padding: 10px 20px;
+    margin-top: 10px;
+    margin-right: 10px;
+    border-radius: 0.5em;
+    aspect-ratio: 1 / 1;
+    box-shadow: 2px 2px 9px 0px rgba(29,29,29,0.7); */
+}
+
+/* .info-note>button {
+
+    font-size: 1.5em;
+    padding: 10px 20px;
+    margin-top: 10px;
+    margin-right: 10px;
+    border-radius: 0.5em;
+    aspect-ratio: 1 / 1;
+    box-shadow: 2px 2px 9px 0px rgba(29,29,29,0.7);
+} */
+
+/* .info-note>button:last-of-type, form>form>label:last-of-type {
+    margin-right: 0;
+    padding: 15px 17px;
+} */
+
+.info-bottom {
+    margin-top: 2%;
+    margin-right: 10%;
+    /* height:35%; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.bottom_motm {
+    /* background-color: #fff;
+    margin-top: 2em;
+    width: 20%;
+    border-radius: 50%;
+    color: black;
+    font-size: 3em; */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    position: relative; 
+    width: 50px;
+    height: 50px;
+    background-color: #fff;
+    border-radius: 50%;
+}
+.bottom_motm label input{
+    transform-origin: center;
+    position: absolute;
+} 
+.bottom_motm label{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bottom_motm img {
+    opacity: 0.8;
+    width: 80%;
+    height: 80%;
+}
+.bottom_motm input[type="radio"]{
+    /* opacity: 0; */
+    width: 0;
+    height: 0;
+}
+
+.scor {
+    font-size: xx-large;
+}
+
+.pressed{
+    transition: 0.4s;
+    background-color:#e81d1d;
+    color: whitesmoke;
+}
+.pressedMotm{
+    transition: 0.9s;
+    background-color:rgb(247, 247, 41);
+    color: whitesmoke;
+    box-shadow: 0px 0px 7px 0px rgb(247, 247, 41);
+}
+
+.bottom_motm:hover, form>label:hover {
+    cursor: pointer;
+    /* background-color: rgb(223, 223, 223); */
+    box-shadow: 2px 3px 10px -2px rgba(255,255,255,0.69);
+    transform: translateY(-1px);
+}
+
+
+/*  #endregion */
+
+/* #endregion */
+
+
+
+@media(min-width:3000px)
+{
+    main {
+
+        color: #fff;
+        width: 80%;
+        max-width: 1250px;
+        border-radius: 2em;
+    }
+}
+
+@media (max-width:1350px) {
+    .pozitie {
+        font-size: 1em;
+    }
+
+    .profil {
+        padding-left: 20px;
+        padding-right: 0;
+    }
+
+    .detalii {
+        padding-right: 0;
+        margin: 0;
+    }
+
+    .info-top {
+        margin: 0;
+    }
+}
+@media (max-width:800px) {
+    .tabela {
+        font-size: 1.2em;
+    }
+
+    .info-top span:first-of-type {
+        /* font-size: 2.2em; */
+        font-size: 1.9em
+    }
+
+    .info-top span:last-of-type {
+        /* font-size: 1.7em; */
+        font-size: 1.5em;
+    }
+
+    form>label {
+        height: 45px;
+        width: 45px;
+    }
+
+    /* .info-note>button:last-of-type, form>form>label:last-of-type { */
+        /* padding: 10px 13px; */
+        /* padding: 7px 9px */
+    /* } */
+
+    /* .pozitie span {
+
+        font-size: 0.1rem;
+    } */
+
+    .detalii {
+        padding-right: 1%;
+    }
+}
+
+@media (max-width: 600px) {
+    .tabela {
+        font-size: 0.7em;
+    }
+
+    main {
+        /* width:80%; */
+        width: 95%;
+    }
+
+    .team-score>div {
+        margin: 0 0.2em;
+    }
+
+    .middle {
+        /* padding: 1.5em 3em 2em 3em; */
+        padding: 1.5em 1em 1em 1em;
+    }
+}

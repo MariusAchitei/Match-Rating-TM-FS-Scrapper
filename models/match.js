@@ -6,10 +6,20 @@ matchSchema = new mongoose.Schema({
     date: {
         type: Date
     },
+    league: {
+        type: Schema.Types.ObjectId,
+        ref: 'League'
+    },
     host: {
         type: Schema.Types.ObjectId,
         ref: 'Team'
     },
+    hostSquad: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Player'
+        }
+    ],
     hostForm: {
         type: Number
     },
@@ -17,6 +27,12 @@ matchSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Team'
     },
+    visitSquad: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Player'
+        }
+    ],
     visitForm: {
         type: Number
     },

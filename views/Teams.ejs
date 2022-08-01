@@ -2,15 +2,36 @@
 
 
 
-    <h1><%= liga1.name %> </h1>
-    <p><%= liga1.country %>'s <%= liga1.tier %> tier </p>
-    <ul>
-        <% for(team of liga1.teams){ %>
+    <h1 style="text-align: center;"><%= liga1.name %> </h1>
+    <p style="text-align: center;"><%= liga1.country %>'s <%= liga1.tier %> tier </p>
+    <!-- <ul>
+        <% for(team of echipe){ %>
             <li><a href="/<%= liga1.name %>/<%= team._id %>"><%= team.name %></a> </li>
         <% } %>
+    </ul> -->
+    <div class="row">
+        <div class="container mt-3 mb-5 col-8 offset-2">
+            <table class="table table-dark table-hover table-bordered">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col">P</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(team of echipe){ %>
+                    <tr style="max-height: 10px;">
+                        <td><%= team.tablePos %> </td>
+                        <td style="padding: 0"><a href="/<%= liga1.name %>/<%= team._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= team.logo %>" alt=""></div></a></td>
+                        <td><a href="/<%= liga1.name %>/<%= team._id %>"><%= team.name %></a> </td>
+                        <td>x</td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-        
-
-
-    </ul>
-
+    

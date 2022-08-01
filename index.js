@@ -25,15 +25,34 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'))
 
 app.get('/SuperLiga', async (req, res) => {
-    const liga1 = await League.findOne({ name: 'SuperLiga' });
-    console.log(await liga1.populate('teams'));
+    const liga1 = await League.findOne({ name: 'SuperLiga' }).populate('teams', 'tablePos name');
+    const echipe = await Team.find({ league: liga1._id }).sort('tablePos')
+    console.log(echipe)
 
-    res.render('Teams', { liga1 });
+    res.render('Teams', { liga1, echipe });
 
 })
 
-app.post('/SuperLiga/matches', (req, res) => {
-    res.send(req.body);
+app.get('/SuperLiga/matches', async (req, res) => {
+    const meciuriLiga1 = await Match.find().populate('host', 'name logo').populate('visit', 'name logo');
+    // await meciuriLiga1.populate('host')
+    // await meciuriLiga1.populate('visit')
+
+    res.render('matches', { meciuriLiga1 })
+
+})
+
+app.post('/SuperLiga/matches', async (req, res) => {
+    // req.body.populate('host_id');
+    // req.body.populate('visit_id');
+    const match = new Match({
+        host: req.body.host_id,
+        hostSquad: req.body.host_players,
+        visit: req.body.visit_id,
+        visitSquad: req.body.visit_players
+    })
+    await match.save()
+    res.redirect('/SuperLiga/matches');
 })
 
 app.get('/SuperLiga/matches/newMatch', async (req, res) => {
@@ -41,6 +60,13 @@ app.get('/SuperLiga/matches/newMatch', async (req, res) => {
     //console.log(await liga1.populate('teams'));
     await liga1.populate('teams')
     res.render('newMatch', { liga1 })
+})
+
+app.get('/SuperLiga/matches/:matchId', async (req, res) => {
+    const { matchId } = req.params;
+    const meci = await Match.findById(matchId).populate('visitSquad').populate('hostSquad').populate('host').populate('visit');
+    //await meci.populate('visitSquad');
+    res.render('showMatch', { meci })
 })
 
 app.get('/SuperLiga/:teamId', async (req, res) => {

@@ -27,8 +27,8 @@ function listenForSelect() {
                 const input = document.createElement('input');
                 input.type = 'checkbox';
                 label.innerText = player.first + ' ' + player.last;
-                const prefix = this.name.split('.')[0]
-                input.name = prefix + '.players';
+                const prefix = this.name.split('_')[0]
+                input.name = prefix + '_players';
                 input.value = player._id;
                 input.classList.add('form-check-input');
                 label.classList.add('form-check-label')
