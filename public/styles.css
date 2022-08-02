@@ -430,7 +430,13 @@ form>label{
         margin: 0;
     }
 }
-@media (max-width:800px) {
+@media (max-width:900px) {
+
+    main {
+        /* width:80%; */
+        width: 90%;
+    }
+
     .tabela {
         font-size: 1.2em;
     }
@@ -465,7 +471,7 @@ form>label{
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 750px) {
     .tabela {
         font-size: 0.7em;
     }

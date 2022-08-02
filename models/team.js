@@ -13,8 +13,23 @@ const teamSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'League'
     },
-    tablePos: {
-        type: Number
+    tableStats: {
+        pcts: {
+            type: Number
+        },
+        pos: {
+            type: Number
+        },
+        played: {
+            type: Number
+        },
+        scored: {
+            type: Number
+        },
+        rec: {
+            type: Number
+        }
+
     },
     results: [
         {

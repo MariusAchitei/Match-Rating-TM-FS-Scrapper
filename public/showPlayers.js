@@ -3,9 +3,11 @@ const selectOaspeti = document.querySelector('.select-oaspeti')
 //const listaGazde = document.querySelector('.lista-gazde')
 //const listaOaspeti = document.querySelector('.lista-oaspeti')
 let i = 1
+let j = 100
 
 function select() {
     this.parentElement.parentElement.classList.toggle('pressed')
+    this.parentElement.parentElement.classList.toggle('notPressed')
 }
 
 function listenForSelect() {
@@ -39,12 +41,14 @@ function listenForSelect() {
 
                 const label = document.createElement('label');
                 label.for = i;
+
                 // label.style.marginLeft = 'auto';
                 // label.style.marginRight = 'auto';
                 label.classList.add('mx-2');
                 const div1 = document.createElement('div');
                 div1.classList.add('card');
                 div1.classList.add('mb-2');
+                div1.classList.add('notPressed')
 
 
                 div1.style.width = '8rem';
@@ -65,6 +69,8 @@ function listenForSelect() {
                 h5.style.fontSize = '0.75rem'
                 h5.innerText = player.first + ' ' + player.last;
                 div2.appendChild(h5);
+
+
                 const input = document.createElement('input');
                 input.type = 'checkbox'
                 input.id = i++;
@@ -73,6 +79,20 @@ function listenForSelect() {
                 input.value = player._id;
                 input.addEventListener('click', select)
                 div2.appendChild(input);
+
+
+                const marcator = document.createElement('input');
+                marcator.classList.add('float-right')
+                marcator.type = 'checkbox'
+                marcator.id = j++;
+                //const prefix = this.name.split('_')[0]
+                marcator.name = prefix + '_goals';
+                marcator.value = player._id;
+                div2.appendChild(marcator);
+                //marcator.addEventListener('click', select)
+
+
+
 
                 listaGazde.appendChild(label);
             }

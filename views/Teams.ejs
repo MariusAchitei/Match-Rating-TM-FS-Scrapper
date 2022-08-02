@@ -10,23 +10,29 @@
         <% } %>
     </ul> -->
     <div class="row">
-        <div class="container mt-3 mb-5 col-8 offset-2">
+        <div class="container mt-3 mb-5 col-10 offset-1">
             <table class="table table-dark table-hover table-bordered">
                 <thead>
                     <tr>
-                    <th scope="col">#</th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col">P</th>
-                    </tr>
+                    <th scope="col" class="pozitie">#</th>
+                    <th scope="col" class="logo"></th>
+                    <th scope="col" class="nume"></th>
+                    <th scope="col" class="played">MJ</th>
+                    <th scope="col" class="scored">GM</th>
+                    <th scope="col" class="received">GP</th>
+                    <th scope="col" class="puncte">Pct</th>
+            
                 </thead>
                 <tbody>
                     <% for(team of echipe){ %>
                     <tr style="max-height: 10px;">
-                        <td><%= team.tablePos %> </td>
-                        <td style="padding: 0"><a href="/<%= liga1.name %>/<%= team._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= team.logo %>" alt=""></div></a></td>
+                        <td><%= team.tableStats.pos %> </td>
+                        <td style="padding: 0"><a href="/<%= liga1.name %>/<%= team._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= team.logo %>" alt="<%= team.name %>"></div></a></td>
                         <td><a href="/<%= liga1.name %>/<%= team._id %>"><%= team.name %></a> </td>
-                        <td>x</td>
+                        <td><%=team.tableStats.played%></td>
+                        <td><%=team.tableStats.scored%></td>
+                        <td><%=team.tableStats.rec%></td>
+                        <td><%=team.tableStats.pcts%></td>
                     </tr>
                     <% } %>
                 </tbody>

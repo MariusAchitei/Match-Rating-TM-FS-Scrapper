@@ -1,8 +1,12 @@
 .pressed{
 
     transition: 0.4s;
-    background-color:rgb(103, 183, 203);
+    background-color:rgba(244, 229, 65, 0.3);
     /* color: whitesmoke; */
     box-shadow: 2px 3px 10px -2px rgba(255,255,255,0.69);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+}
+
+.notPressed{
+    transition: 0.4s;
 }

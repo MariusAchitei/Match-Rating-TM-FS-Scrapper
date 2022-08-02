@@ -98,7 +98,11 @@ async function addPlayers(Echipa, link, suf) {
             // console.log(echipa);
             echipa.name = res.data.nume;
             echipa.logo = res.data.logo;
-            echipa.tablePos = res.data.tablePos;
+            echipa.tableStats.pos = res.data.tablePos;
+            echipa.tableStats.pcts = res.data.pcts;
+            echipa.tableStats.played = res.data.played;
+            echipa.tableStats.scored = res.data.scored;
+            echipa.tableStats.rec = res.data.rec;
 
             let data = [...res.data.jucatori];
 
@@ -201,6 +205,7 @@ async function reset() {
     await Team.deleteMany({});
     await League.deleteMany({});
     await Player.deleteMany({});
+    await Match.deleteMany({});
     await createLeague('SuperLiga', 'Romania', 1);
 
     update.forEach(async (echipa) => {

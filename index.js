@@ -26,7 +26,7 @@ app.use(methodOverride('_method'))
 
 app.get('/SuperLiga', async (req, res) => {
     const liga1 = await League.findOne({ name: 'SuperLiga' }).populate('teams', 'tablePos name');
-    const echipe = await Team.find({ league: liga1._id }).sort('tablePos')
+    const echipe = await Team.find({ league: liga1._id }).sort('tableStats.pos')
     console.log(echipe)
 
     res.render('Teams', { liga1, echipe });
@@ -49,9 +49,13 @@ app.post('/SuperLiga/matches', async (req, res) => {
         host: req.body.host_id,
         hostSquad: req.body.host_players,
         visit: req.body.visit_id,
-        visitSquad: req.body.visit_players
+        visitSquad: req.body.visit_players,
+        hostGoals: req.body.host_goals,
+        visitGoals: req.body.visit_goals
     })
     await match.save()
+
+    //res.send(match)
     res.redirect('/SuperLiga/matches');
 })
 
@@ -64,7 +68,8 @@ app.get('/SuperLiga/matches/newMatch', async (req, res) => {
 
 app.get('/SuperLiga/matches/:matchId', async (req, res) => {
     const { matchId } = req.params;
-    const meci = await Match.findById(matchId).populate('visitSquad').populate('hostSquad').populate('host').populate('visit');
+    const meci = await Match.findById(matchId).populate('visitSquad hostSquad host visit visitGoals hostGoals')
+    console.log(meci.hostGoals)
     //await meci.populate('visitSquad');
     res.render('showMatch', { meci })
 })

@@ -36,26 +36,30 @@ matchSchema = new mongoose.Schema({
     visitForm: {
         type: Number
     },
-    hostGoals: {
-        player: {
+    hostGoals: [
+        // player: {
+        {
             type: Schema.Types.ObjectId,
             ref: 'Player'
-        },
-        minute: {
-            type: Number,
-            min: 0
         }
-    },
-    visitGoals: {
-        player: {
+        // },
+        // minute: {
+        //     type: Number,
+        //     min: 0
+        // }
+    ],
+    visitGoals: [
+        // player: {
+        {
             type: Schema.Types.ObjectId,
             ref: 'Player'
-        },
-        minute: {
-            type: Number,
-            min: 0
         }
-    },
+        // },
+        // minute: {
+        //     type: Number,
+        //     min: 0
+        // }
+    ],
     win: {
         type: {
             type: Schema.Types.ObjectId,

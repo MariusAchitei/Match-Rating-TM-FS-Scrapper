@@ -11,12 +11,11 @@
                     <tr>
                     <th scope="col">date</th>
                     <th scope="col">host</th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col">visitors</th>
-                    <th scope="col"></th>
+                    <th scope="col" class="host-logo"></th>
+                    <th scope="col" class="host-score"></th>
+                    <th scope="col" class="visit-score"></th>
+                    <th scope="col" class="visit-logo"></th>
+                    <th scope="col">visitor</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -25,11 +24,11 @@
                         <td> </td>
                         <td style="text-align:right ;"><a href="/SuperLiga/matches/<%= meci._id %>"><%= meci.host.name %></a> </td>
                         <td style="padding: 0"><a href="/SuperLiga/matches/<%= meci._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= meci.host.logo %>" alt=""></div></a></td>
-                        <td style="text-align:center ;">x</td>
-                        <td style="text-align:center ;">x</td>
+                        <td style="text-align:center ;"><%= meci.hostGoals.length %> </td>
+                        <td style="text-align:center ;"><%= meci.visitGoals.length %> </td>
                         <td style="padding: 0"><a href="/SuperLiga/matches/<%= meci._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= meci.visit.logo %>" alt=""></div></a></td>
                         <td><a href="/SuperLiga/matches/<%= meci._id %>"><%= meci.visit.name %></a> </td>
-                        <td>x</td>
+                        <!-- <td>x</td> -->
                     </tr>
                     <% } %>
                 </tbody>
