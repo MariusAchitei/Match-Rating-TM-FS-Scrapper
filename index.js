@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const { League, Match, Player, Team } = require('./models/index.js')
 const ejsMate = require('ejs-mate')
+const axios = require('axios')
+var bodyParser = require("body-parser")
 //const League = require('./models/league.js')
 
 mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
@@ -17,6 +19,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
     })
 
 
+app.use(bodyParser.json());   // Transforma datele de la axios.post
 app.use(express.static('public'));
 app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs');
@@ -27,7 +30,7 @@ app.use(methodOverride('_method'))
 app.get('/SuperLiga', async (req, res) => {
     const liga1 = await League.findOne({ name: 'SuperLiga' }).populate('teams', 'tablePos name');
     const echipe = await Team.find({ league: liga1._id }).sort('tableStats.pos')
-    console.log(echipe)
+    // console.log(echipe)
 
     res.render('Teams', { liga1, echipe });
 
@@ -69,9 +72,14 @@ app.get('/SuperLiga/matches/newMatch', async (req, res) => {
 app.get('/SuperLiga/matches/:matchId', async (req, res) => {
     const { matchId } = req.params;
     const meci = await Match.findById(matchId).populate('visitSquad hostSquad host visit visitGoals hostGoals')
-    console.log(meci.hostGoals)
+    //console.log(meci.hostGoals)
     //await meci.populate('visitSquad');
     res.render('showMatch', { meci })
+})
+
+app.post('/SuperLiga/matches/:matchId', async (req, res) => {
+
+
 })
 
 app.get('/SuperLiga/:teamId', async (req, res) => {
@@ -93,6 +101,10 @@ app.get('/api/:teamId', async (req, res) => {
 
 app.get('/', (req, res) => {
     res.send('Hai Salut');
+})
+
+app.get('*', (req, res) => {
+    res.send('Team prins Astrosmechere')
 })
 
 

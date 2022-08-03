@@ -1,64 +1,4 @@
 
-
-// console.log('miai');
-// const buttons =document.querySelectorAll('.info-note>button, .bottom_motm');
-// for(let button of buttons){
-//     button.addEventListener('click', function() {
-//         console.log('bun');
-//         button.classList.toggle('pressed');
-//     })
-// }
-
-// const radios =document.querySelectorAll('label');
-// for(let radio of radios){
-//     radio.addEventListener('click', function() {
-//         console.log('bun');
-//         radio.classList.toggle('pressed');
-//     })
-// }
-
-// const forms = document.querySelectorAll('form');
-// for(let form of forms){
-//     form.addEventListener('change', handleChangeLabel)
-// }
-// function handleChangeLabel(event){
-//     const changedThing = event.target;
-
-//     allBtn = changedThing.parentElement.children;
-//     for(let btn of allBtn){
-//         // if(btn.classList.contains('pressed')){
-//             btn.classList.remove('pressed');
-//         // }
-//     }
-
-//     changedThing.parentElement.classList.toggle('pressed');
-// }
-
-// const forms =document.querySelectorAll('form');
-// const buttons = document.querySelectorAll('button');
-// for(let button of buttons){
-//         button.addEventListener('change', function(){
-//             console.log('bun');
-//             button.classList.toggle('pressed');
-//         });
-//     }
-
-// const forms = document.querySelectorAll('.rating-section form');
-// for(let form of forms){
-//     labels = form.childNodes;
-//     for(let label of labels){
-//         nota = label.innerText;
-//         label.innerText = "";
-//         console.log(label.innerHTML);
-//         label.innerHTML = `<span>${nota}</span>`;
-//     }
-
-// }
-
-// $('.form label input[type="radio"]').click(function() {
-//     $(this).parent().addClass('pressed').siblings('label').removeClass('pressed')
-//   });
-
 const inputs = document.querySelectorAll('form label input');
 for (let input of inputs) {
   input.addEventListener('click', ApasareNote);
@@ -86,4 +26,64 @@ function ApasareMotm() {
   this.parentElement.parentElement.classList.add('pressedMotm');
 
 }
-console.log("vai de plm");
+
+const buttonSubmitHost = document.querySelector('#submitHost');
+const ratingHost = document.querySelector('#ratingHost');
+
+ratingHost.addEventListener('submit', submitListen)
+
+function submitListen(event) {
+  event.preventDefault();
+  //console.log(this.elements);
+  const sentData = {
+    note: [],
+    potm: ''
+  };
+
+  const array = [...this.elements]
+  array.forEach(input => {
+    if (input.checked) {
+      if (input.name !== 'potm') {
+        const structNota = {};
+        structNota.id = input.name;
+        structNota.score = input.value
+        sentData.note.push(structNota)
+      }
+      else {
+        sentData.potm = input.value;
+      }
+    }
+  });
+
+  console.log(sentData)
+
+  axios({
+    method: 'post',
+    url: `/Superliga/matches/${this.elements[0].value}`,
+    headers: {},
+    data: {
+      meci: this.elements[0].value,
+      note: sentData.note,
+      potm: sentData.potm
+    }
+  })
+    .then(function (res) {
+      console.log(res.data)
+    })
+    .catch(function (err) {
+      console.log(err)
+    })
+
+  // axios({
+  //   method: 'post',
+  //   url: `/Superliga/matches${this.elements[0].value}`,
+  //   data: data
+  // })
+  //   .then((res) => {
+  //     //console.log(res)
+  //   })
+  //   .catch((err) => {
+  //     //console.log(err)
+  //   });
+}
+

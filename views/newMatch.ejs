@@ -6,7 +6,7 @@
 
 <form action="/SuperLiga/matches" method="POST">
  <div class="form-group">
-     <label for="">Selectati echipa gazda<select class="select-gazde form-control" name="host_id" id="">
+     <label for="">Selectati echipa gazda<select class="select-gazde form-control" required name="host_id" id="">
             <option value="" disabled selected>echipa gazda</option>
         <%for(team of liga1.teams){%>
             <option value="<%= team._id %>"><%= team.name %> </option>
@@ -16,7 +16,7 @@
      </div>
  </div>
  <div class="form-group">
-     <label for="">Selectati echipa oaspete<select class="select-oaspeti form-control" name="visit_id" id="">
+     <label for="">Selectati echipa oaspete<select class="select-oaspeti form-control" required name="visit_id" id="">
         <option value="" disabled selected>echipa oaspete</option>
         <%for(team of liga1.teams){%>
             <option value="<%= team.id %>"><%= team.name %> </option>

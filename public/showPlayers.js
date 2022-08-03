@@ -6,8 +6,21 @@ let i = 1
 let j = 100
 
 function select() {
-    this.parentElement.parentElement.classList.toggle('pressed')
-    this.parentElement.parentElement.classList.toggle('notPressed')
+    this.parentElement.parentElement.parentElement.classList.toggle('pressed')
+    this.parentElement.parentElement.parentElement.classList.toggle('notPressed')
+    this.parentElement.classList.toggle('checkActive')
+    this.parentElement.classList.toggle('checkInactive')
+}
+function score() {
+    this.parentElement.classList.toggle('checkActive')
+    this.parentElement.classList.toggle('checkInactive')
+    //console.log(this.parentElement.previousElementSibling)
+    const input1 = this.parentElement.previousElementSibling.children[0];
+    if (!input1.checked) {
+        input1.checked = true;
+        input1.dispatchEvent(new Event('change'))
+    }
+
 }
 
 function listenForSelect() {
@@ -22,28 +35,8 @@ function listenForSelect() {
             //console.log(data)
 
             for (player of data.squad) {
-                // const label = document.createElement('label');
-                // const input = document.createElement('input');
-                // input.type = 'checkbox';
-                // label.innerText = player.first + ' ' + player.last;
-                // const prefix = this.name.split('_')[0]
-                // input.name = prefix + '_players';
-                // input.value = player._id;
-                // input.classList.add('form-check-input');
-                // label.classList.add('form-check-label')
-                // label.appendChild(input);
-
-                // listaGazde.appendChild(label)
-
-                // const br = document.createElement('br');
-                // listaGazde.appendChild(br)
-                // //console.log(p.innerText)
-
                 const label = document.createElement('label');
                 label.for = i;
-
-                // label.style.marginLeft = 'auto';
-                // label.style.marginRight = 'auto';
                 label.classList.add('mx-2');
                 const div1 = document.createElement('div');
                 div1.classList.add('card');
@@ -60,35 +53,58 @@ function listenForSelect() {
                 img.style.objectFit = 'cover'
                 img.style.objectPosition = 'top'
                 div1.appendChild(img);
+
                 const div2 = document.createElement('div');
                 div2.classList.add('card-body');
+                div2.classList.add('form-check');
+                div2.classList.add('form-switch');
                 div2.style.padding = '5px'
                 div1.appendChild(div2);
+
                 const h5 = document.createElement('h5');
                 h5.classList.add('card-title');
                 h5.style.fontSize = '0.75rem'
                 h5.innerText = player.first + ' ' + player.last;
                 div2.appendChild(h5);
 
+                const labelJoc = document.createElement('label');
+                labelJoc.innerText = 'Joaca'
+                //marcator.type = 'checkbox'
+                //marcator.classList.add('marcator')
+                labelJoc.classList.add('labelMar')
+                labelJoc.classList.add('checkInactive')
 
                 const input = document.createElement('input');
                 input.type = 'checkbox'
+                input.classList.add('hideInput')
+
+                //input.classList.add('form-check-input')
                 input.id = i++;
                 const prefix = this.name.split('_')[0]
                 input.name = prefix + '_players';
                 input.value = player._id;
-                input.addEventListener('click', select)
-                div2.appendChild(input);
+                input.addEventListener('change', select)
+                div2.appendChild(labelJoc)
+                labelJoc.appendChild(input);
 
 
                 const marcator = document.createElement('input');
-                marcator.classList.add('float-right')
+                const labelMar = document.createElement('label');
+
+                labelMar.innerText = 'Marcator'
                 marcator.type = 'checkbox'
-                marcator.id = j++;
-                //const prefix = this.name.split('_')[0]
+                marcator.classList.add('hideInput')
+
+                labelMar.classList.add('labelMar')
+                labelMar.classList.add('checkInactive')
+
                 marcator.name = prefix + '_goals';
                 marcator.value = player._id;
-                div2.appendChild(marcator);
+                div2.appendChild(labelMar);
+                labelMar.appendChild(marcator);
+
+                marcator.addEventListener('change', score)
+
                 //marcator.addEventListener('click', select)
 
 
