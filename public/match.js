@@ -55,12 +55,11 @@ function submitListen(event) {
     }
   });
 
-  console.log(sentData)
+  //console.log(sentData)
 
   axios({
     method: 'post',
     url: `/Superliga/matches/${this.elements[0].value}`,
-    headers: {},
     data: {
       meci: this.elements[0].value,
       note: sentData.note,
@@ -68,22 +67,32 @@ function submitListen(event) {
     }
   })
     .then(function (res) {
-      console.log(res.data)
+      const main = document.querySelector('main')
+      const p = document.createElement('p')
+      p.style.color = 'black'
+      const procent = ((res.data.potm.curent * 100) / res.data.potm.total).toFixed(2);
+      p.innerText = res.data.potm.id.first + '  ' + res.data.potm.id.last + '  ' + procent
+      main.appendChild(p);
+
+      //const divs = document.querySelectorAll('.profil')
+      // const ids = document.querySelectorAll('.playerId').value
+      // const lasts = document.querySelectorAll('.lastName').innerText
+      // const firsts = document.querySelectorAll('.firstName').innerText
+      const scores = document.querySelectorAll('.scor')
+
+      console.log(scores);
+
+      let i = 0
+      scores.forEach(score => {
+        score.innerText = (res.data.hostSquad[i].nota / res.data.hostSquad[i].voturi).toFixed(2);
+        i++
+      });
+      //console.log(names.innerText)
+
     })
     .catch(function (err) {
       console.log(err)
     })
 
-  // axios({
-  //   method: 'post',
-  //   url: `/Superliga/matches${this.elements[0].value}`,
-  //   data: data
-  // })
-  //   .then((res) => {
-  //     //console.log(res)
-  //   })
-  //   .catch((err) => {
-  //     //console.log(err)
-  //   });
 }
 

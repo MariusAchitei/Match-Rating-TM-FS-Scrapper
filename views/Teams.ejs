@@ -27,7 +27,7 @@
                     <% for(team of echipe){ %>
                     <tr style="max-height: 10px;">
                         <td><%= team.tableStats.pos %> </td>
-                        <td style="padding: 0"><a href="/<%= liga1.name %>/<%= team._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= team.logo %>" alt="<%= team.name %>"></div></a></td>
+                        <td style=""><a style="margin: auto;" href="/<%= liga1.name %>/<%= team._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 95%; width: 95%; margin: auto;"  src="<%= team.logo %>" alt="<%= team.name %>"></div></a></td>
                         <td><a href="/<%= liga1.name %>/<%= team._id %>"><%= team.name %></a> </td>
                         <td><%=team.tableStats.played%></td>
                         <td><%=team.tableStats.scored%></td>

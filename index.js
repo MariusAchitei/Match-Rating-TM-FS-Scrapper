@@ -6,7 +6,8 @@ const methodOverride = require('method-override');
 const { League, Match, Player, Team } = require('./models/index.js')
 const ejsMate = require('ejs-mate')
 const axios = require('axios')
-var bodyParser = require("body-parser")
+var bodyParser = require("body-parser");
+const { Console } = require('console');
 //const League = require('./models/league.js')
 
 mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
@@ -46,19 +47,30 @@ app.get('/SuperLiga/matches', async (req, res) => {
 })
 
 app.post('/SuperLiga/matches', async (req, res) => {
-    // req.body.populate('host_id');
-    // req.body.populate('visit_id');
+    const { host_id, visit_id, host_players, visit_players, host_goals, visit_goals } = req.body;
     const match = new Match({
-        host: req.body.host_id,
-        hostSquad: req.body.host_players,
-        visit: req.body.visit_id,
-        visitSquad: req.body.visit_players,
-        hostGoals: req.body.host_goals,
-        visitGoals: req.body.visit_goals
+        host: host_id,
+        //hostSquad: host_players,
+        visit: visit_id,
+        //visitSquad: visit_players,
+        hostGoals: host_goals,
+        visitGoals: visit_goals
     })
+    if (host_players)
+        host_players.forEach(player => {
+            match.hostSquad.push({
+                id: player
+            })
+        });
+    if (visit_players)
+        visit_players.forEach(player => {
+            match.visitSquad.push({
+                id: player
+            })
+        });
+
     await match.save()
 
-    //res.send(match)
     res.redirect('/SuperLiga/matches');
 })
 
@@ -71,14 +83,47 @@ app.get('/SuperLiga/matches/newMatch', async (req, res) => {
 
 app.get('/SuperLiga/matches/:matchId', async (req, res) => {
     const { matchId } = req.params;
-    const meci = await Match.findById(matchId).populate('visitSquad hostSquad host visit visitGoals hostGoals')
-    //console.log(meci.hostGoals)
-    //await meci.populate('visitSquad');
+    const meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id visitSquad.id').populate('hostGoals visitGoals', 'first last')
     res.render('showMatch', { meci })
 })
 
 app.post('/SuperLiga/matches/:matchId', async (req, res) => {
 
+    const { meci: meciId, note: note, potm: potmId } = req.body;
+    const meci = await Match.findById(meciId)
+
+    //adauga vot omul meciului
+    let i = 0;
+    let findPotm = {
+        id: '',
+        voturi: 0,
+    }
+    let total = 0;
+    for (let player of meci.hostSquad) {
+        if (note[i].id == player.id) {
+            player.nota += parseInt(note[i].score);
+            //console.log(typeof (note[i].score))
+            player.voturi++;
+            i++;
+            //console.log(player)
+        }
+        if (player.id == potmId) {
+            player.potm.voturi++;
+            total++;
+        }
+        if (player.potm.voturi > findPotm.voturi) {
+            findPotm.id = player.id;
+            findPotm.voturi = player.potm.voturi;
+        }
+
+    }
+    meci.potm.id = await Player.findById(findPotm.id);
+    meci.potm.curent = findPotm.voturi;
+    meci.potm.total += total
+    console.log(meci.potm)
+    await meci.save()
+
+    res.json(meci)
 
 })
 

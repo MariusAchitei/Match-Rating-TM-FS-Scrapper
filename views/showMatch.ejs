@@ -6,7 +6,7 @@
 
     <a href="/SuperLiga/matches"><button class="btn btn-secondary m-3">Back</button></a>
     <main>
-
+      <h1><%= meci.host.name %>vs <%= meci.visit.name %>  </h1>
       <ul>
         <% for(let marcator of meci.hostGoals){ %>
           <li style="color:black;"><%= marcator.first + ' ' + marcator.last %> </li>
@@ -22,6 +22,7 @@
       </form>
       <section class="rating-section">
         <% for(let jucator of meci.hostSquad){ %>
+        <% jucator = jucator.id %>  
         <%if(jucator.position === "Portar" ) { %>
           <div class="profil jucator portar">
         <% } else if(jucator.pozitie === "AN") { %>
@@ -59,12 +60,12 @@
           </div>
           <div class="detalii">
             <div class="info-top">
-              <span><%= jucator.last%></span>
-              <span><%= jucator.first%></span>
+              <span class="lastName"><%= jucator.last%></span>
+              <span class="firstName"><%= jucator.first%></span>
             </div>
             <!-- <div class="info-note"> -->
             <form action="">
-              <label>1<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="1"/></label>
+              <label>1<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="1" required/></label>
               <label>2<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="2"/></label>
               <label>3<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="3"/></label>
               <label>4<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="4"/></label>
@@ -83,7 +84,9 @@
                     type="radio"
                     name="potm"
                     form="ratingHost"
+                    class="playerId"
                     value="<%= jucator._id %>"
+                    required
                 /></label>
               </div>
               <div class="voturi"><span>Nota de astazi</span></div>

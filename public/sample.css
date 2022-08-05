@@ -27,9 +27,9 @@
 }
 .checkInactive{
     transition: 0.3s;
-    background-color: #5bc0de;
+    background-color: #f5ebe0;
 }
 .checkActive{
     transition: 0.3s;
-    background-color: #5cb85c;
+    background-color: #d5bdaf;
 }

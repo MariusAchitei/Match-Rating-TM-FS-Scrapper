@@ -10,6 +10,21 @@ function select() {
     this.parentElement.parentElement.parentElement.classList.toggle('notPressed')
     this.parentElement.classList.toggle('checkActive')
     this.parentElement.classList.toggle('checkInactive')
+
+    //console.log(this.checked)
+
+    if (!this.checked) {
+        //console.log(this.parentElement.nextElementSibling.children[0])
+        const inputJoaca = this.parentElement.nextElementSibling.children[0]
+
+        console.log(inputJoaca.checked)
+
+        if (inputJoaca.checked) {
+            inputJoaca.checked = 0;
+            inputJoaca.parentElement.classList.toggle('checkActive')
+            inputJoaca.parentElement.classList.toggle('checkInactive')
+        }
+    }
 }
 function score() {
     this.parentElement.classList.toggle('checkActive')
@@ -83,7 +98,9 @@ function listenForSelect() {
                 const prefix = this.name.split('_')[0]
                 input.name = prefix + '_players';
                 input.value = player._id;
+
                 input.addEventListener('change', select)
+
                 div2.appendChild(labelJoc)
                 labelJoc.appendChild(input);
 
