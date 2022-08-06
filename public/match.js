@@ -62,6 +62,7 @@ function submitListen(event) {
     url: `/Superliga/matches/${this.elements[0].value}`,
     data: {
       meci: this.elements[0].value,
+      team: this.elements[1].value,
       note: sentData.note,
       potm: sentData.potm
     }
@@ -69,9 +70,20 @@ function submitListen(event) {
     .then(function (res) {
       const main = document.querySelector('main')
       const p = document.createElement('p')
-      p.style.color = 'black'
-      const procent = ((res.data.potm.curent * 100) / res.data.potm.total).toFixed(2);
-      p.innerText = res.data.potm.id.first + '  ' + res.data.potm.id.last + '  ' + procent
+      p.style.color = 'black';
+      const team = document.querySelector('.team').value;
+      let procent;
+
+      if (team == 'host') {
+        procent = ((res.data.hostPotm.curent * 100) / res.data.hostPotm.total).toFixed(2);
+        p.innerText = res.data.hostPotm.id.first + '  ' + res.data.hostPotm.id.last + '  ' + procent
+      }
+      else {
+        procent = ((res.data.visitPotm.curent * 100) / res.data.visitPotm.total).toFixed(2);
+        p.innerText = res.data.visitPotm.id.first + '  ' + res.data.visitPotm.id.last + '  ' + procent
+      }
+
+
       main.appendChild(p);
 
       //const divs = document.querySelectorAll('.profil')
@@ -84,8 +96,13 @@ function submitListen(event) {
 
       let i = 0
       scores.forEach(score => {
-        score.innerText = (res.data.hostSquad[i].nota / res.data.hostSquad[i].voturi).toFixed(2);
-        i++
+        if (team == 'host') {
+          score.innerText = (res.data.hostSquad[i].nota / res.data.hostSquad[i].voturi).toFixed(2);
+        }
+        else {
+          score.innerText = (res.data.visitSquad[i].nota / res.data.visitSquad[i].voturi).toFixed(2);
+        }
+        i++;
       });
       //console.log(names.innerText)
 

@@ -112,7 +112,22 @@ matchSchema = new mongoose.Schema({
         //     min: 0
         // }
     ],
-    potm:
+    hostPotm:
+    {
+        id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Player'
+        },
+        curent: {
+            type: Number,
+            default: 0
+        },
+        total: {
+            type: Number,
+            default: 0
+        }
+    },
+    visitPotm:
     {
         id: {
             type: Schema.Types.ObjectId,

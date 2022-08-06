@@ -87,10 +87,25 @@ app.get('/SuperLiga/matches/:matchId', async (req, res) => {
     res.render('showMatch', { meci })
 })
 
+app.get('/SuperLiga/matches/:matchId/:team', async (req, res) => {
+    const { matchId, team } = req.params;
+    let meci;
+    if (team == 'host') {
+        meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id').populate('hostGoals visitGoals', 'first last')
+    }
+    else {
+        meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('visitSquad.id').populate('visitGoals hostGoals', 'first last')
+    }
+    res.render('showRatings', { meci, team })
+})
+
+
 app.post('/SuperLiga/matches/:matchId', async (req, res) => {
 
-    const { meci: meciId, note: note, potm: potmId } = req.body;
+    const { meci: meciId, team: team, note: note, potm: potmId } = req.body;
     const meci = await Match.findById(meciId)
+
+    console.log(team);
 
     //adauga vot omul meciului
     let i = 0;
@@ -99,7 +114,19 @@ app.post('/SuperLiga/matches/:matchId', async (req, res) => {
         voturi: 0,
     }
     let total = 0;
-    for (let player of meci.hostSquad) {
+
+    let players
+
+    if (team == 'host') {
+        players = meci.hostSquad;
+        console.log('salut')
+    }
+    else {
+        players = meci.visitSquad;
+        console.log('pa')
+    }
+
+    for (let player of players) {
         if (note[i].id == player.id) {
             player.nota += parseInt(note[i].score);
             //console.log(typeof (note[i].score))
@@ -117,10 +144,17 @@ app.post('/SuperLiga/matches/:matchId', async (req, res) => {
         }
 
     }
-    meci.potm.id = await Player.findById(findPotm.id);
-    meci.potm.curent = findPotm.voturi;
-    meci.potm.total += total
-    console.log(meci.potm)
+    if (team == 'host') {
+        meci.hostPotm.id = await Player.findById(findPotm.id);
+        meci.hostPotm.curent = findPotm.voturi;
+        meci.hostPotm.total += total
+    }
+    else {
+        meci.visitPotm.id = await Player.findById(findPotm.id);
+        meci.visitPotm.curent = findPotm.voturi;
+        meci.visitPotm.total += total
+    }
+    //console.log(meci.potm)
     await meci.save()
 
     res.json(meci)
