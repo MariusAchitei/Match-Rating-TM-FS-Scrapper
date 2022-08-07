@@ -21,11 +21,11 @@
                 <tbody>
                     <% for(meci of meciuriLiga1){ %>
                     <tr style="max-height: 10px;">
-                        <td> </td>
+                        <td> <%= meci.date  %> </td>
                         <td style="text-align:right ;"><a href="/SuperLiga/matches/<%= meci._id %>"><%= meci.host.name %></a> </td>
                         <td style="padding: 0"><a href="/SuperLiga/matches/<%= meci._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= meci.host.logo %>" alt=""></div></a></td>
-                        <td style="text-align:center ;"><%= meci.hostGoals.length %> </td>
-                        <td style="text-align:center ;"><%= meci.visitGoals.length %> </td>
+                        <td style="text-align:center ;"><%= meci.hostScore %> </td>
+                        <td style="text-align:center ;"><%= meci.visitScore %> </td>
                         <td style="padding: 0"><a href="/SuperLiga/matches/<%= meci._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= meci.visit.logo %>" alt=""></div></a></td>
                         <td><a href="/SuperLiga/matches/<%= meci._id %>"><%= meci.visit.name %></a> </td>
                         <!-- <td>x</td> -->

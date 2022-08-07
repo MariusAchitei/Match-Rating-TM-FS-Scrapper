@@ -1,6 +1,19 @@
 <% layout('layouts/boilerplate.ejs') -%> 
 
-
+    <style>
+        td, th{
+            padding: 0 !important;
+            text-align: center;
+            vertical-align: middle;
+        }
+        thead th{
+            padding:0.4rem 0 !important;
+            background-color: black !important;
+        }
+        .team-name{
+            text-align: left;
+        }
+    </style>
 
     <h1 style="text-align: center;"><%= liga1.name %> </h1>
     <p style="text-align: center;"><%= liga1.country %>'s <%= liga1.tier %> tier </p>
@@ -11,7 +24,7 @@
     </ul> -->
     <div class="row">
         <div class="container mt-3 mb-5 col-10 offset-1">
-            <table class="table table-dark table-hover table-bordered">
+            <table class="table table-dark table-hover">
                 <thead>
                     <tr>
                     <th scope="col" class="pozitie">#</th>
@@ -26,9 +39,9 @@
                 <tbody>
                     <% for(team of echipe){ %>
                     <tr style="max-height: 10px;">
-                        <td><%= team.tableStats.pos %> </td>
-                        <td style=""><a style="margin: auto;" href="/<%= liga1.name %>/<%= team._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 95%; width: 95%; margin: auto;"  src="<%= team.logo %>" alt="<%= team.name %>"></div></a></td>
-                        <td><a href="/<%= liga1.name %>/<%= team._id %>"><%= team.name %></a> </td>
+                        <th scope="row"><%= team.tableStats.pos %> </td>
+                        <td style=""><a style="margin: auto;" href="/<%= liga1.name %>/<%= team._id %>"><div style="height: 45px; width: 45px; margin:auto;"><img style="height: 90%; width: 90%; margin: auto;"  src="<%= team.logo %>" alt="<%= team.name %>"></div></a></td>
+                        <td class="team-name"><a href="/<%= liga1.name %>/<%= team._id %>"><%= team.name %></a> </td>
                         <td><%=team.tableStats.played%></td>
                         <td><%=team.tableStats.scored%></td>
                         <td><%=team.tableStats.rec%></td>

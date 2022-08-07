@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 
 matchSchema = new mongoose.Schema({
     date: {
-        type: Date
+        type: String,
+        default: '-'
     },
     league: {
         type: Schema.Types.ObjectId,
@@ -88,6 +89,9 @@ matchSchema = new mongoose.Schema({
     visitForm: {
         type: Number
     },
+    hostScore: {
+        type: String
+    },
     hostGoals: [
         // player: {
         {
@@ -100,6 +104,9 @@ matchSchema = new mongoose.Schema({
         //     min: 0
         // }
     ],
+    visitScore: {
+        type: String
+    },
     visitGoals: [
         // player: {
         {

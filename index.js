@@ -8,6 +8,7 @@ const ejsMate = require('ejs-mate')
 const axios = require('axios')
 var bodyParser = require("body-parser");
 const { Console } = require('console');
+const { updateTable } = require('./update')
 //const League = require('./models/league.js')
 
 mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
@@ -50,12 +51,14 @@ app.post('/SuperLiga/matches', async (req, res) => {
     const { host_id, visit_id, host_players, visit_players, host_goals, visit_goals } = req.body;
     const match = new Match({
         host: host_id,
-        //hostSquad: host_players,
         visit: visit_id,
-        //visitSquad: visit_players,
         hostGoals: host_goals,
-        visitGoals: visit_goals
+        visitGoals: visit_goals,
     })
+
+    match.hostScore = match.hostGoals.length;
+    match.visitScore = match.visitGoals.length
+
     if (host_players)
         host_players.forEach(player => {
             match.hostSquad.push({
@@ -68,6 +71,7 @@ app.post('/SuperLiga/matches', async (req, res) => {
                 id: player
             })
         });
+
 
     await match.save()
 
@@ -179,13 +183,29 @@ app.get('/api/:teamId', async (req, res) => {
 })
 
 app.get('/', (req, res) => {
+
     res.send('Hai Salut');
+})
+
+app.get('/update', async (req, res) => {
+    const leagues = [
+        {
+            name: 'SuperLiga',
+            url: 'https://lpf.ro/liga-1'
+        },
+        {
+            name: 'PremierLeague',
+            url: ''
+        }
+    ];
+    await updateTable(leagues);
+    res.redirect('/SuperLiga');
+
 })
 
 app.get('*', (req, res) => {
     res.send('Team prins Astrosmechere')
 })
-
 
 
 app.listen(2000, () => {

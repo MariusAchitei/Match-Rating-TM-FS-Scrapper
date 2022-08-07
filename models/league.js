@@ -12,6 +12,9 @@ const leagueSchema = new mongoose.Schema({
     tier: {
         type: Number
     },
+    url: {
+        type: String
+    },
     teams: [
         {
             type: Schema.Types.ObjectId,

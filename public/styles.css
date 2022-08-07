@@ -16,24 +16,24 @@ main {
     color: #fff;
     width: 50%;
     max-width: 1000px;
-    border-radius: 2em;
+    border-radius: 2rem;
 }
 
 
  /* #region  TABELA DE SCOR */
 
 .tabela {
-    font-size: 1.8em;
+    font-size: 1rem;
     margin: 15% 0;
-    border-radius: 2em;
+    border-radius: 2rem;
     background: #e81d1d;
 }
 
 .competitie {
     text-align: center;
-    border-radius: 2em 2em 0 0;
+    border-radius: 2rem 2rem 0 0;
     background-color: #37003d;
-    padding: 0.7em 0;
+    padding: 0.7rem 0;
 }
 
 .status1 {
@@ -41,29 +41,32 @@ main {
     width: 100%;
     display: flex;
     justify-content: center;
+    /* position:absolute */
 }
 
 .status1>div {
     background-color: #ca0d0d;
     text-align: center;
-    padding: 0.5em 1.25em;
-    border-radius: 0 0 1em 1em;
+    padding: 0.3rem 1.25rem;
+    border-radius: 0 0 1rem 1rem;
 }
 
 .middle {
     /* background-color: green; */
-    padding: 1.5em 3em 1em 3em;
+    padding: 1rem 1rem 0.5rem 1rem;
     display: flex;
-    align-items: center;
+    justify-content: space-around;
 }
 
 .scor-echipa1, .scor-echipa2 {
     /* background-color: blanchedalmond; */
     width: 50%;
-    padding: 1.3em 0.5em 1em;
+    padding: 0.7rem 0.5rem 1rem;
 }
 .tabelaScor{
-    padding-top:10%;
+    font-size: 1rem;
+    display: block;
+    padding-top:4%;
     text-align: center;
     padding-bottom: 0;
     margin-bottom: 0;
@@ -93,17 +96,18 @@ main {
 
 .team-score>div {
     background-color: aliceblue;
-    border-radius: 0.5em;
-    margin: 0 1em;
+    border-radius: 0.5rem;
+    margin: 0 1rem;
     color: black;
-    padding: 0.5em;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid black;
     font-size: 150%;
     font-weight: bold;
 }
 
 .team-logo {
     display: flex;
-    align-items: center;
+    align-itrems: center;
     justify-content: center;
     height: 50%;
     width: 50%;
@@ -126,47 +130,50 @@ main {
     justify-content: center;
     align-items: center;
     background-color: #ca0d0d;
-    padding: 0.5em 0;
+    padding: 0.5rem 0;
 }
 
 .status-ht>div {
     background-color: aliceblue;
-    border-radius: 0.5em;
-    margin: 0 1em;
+    border-radius: 0.5rem;
+    margin: 0 1rem;
     color: black;
-    padding: 0.5em;
-    font-size: 75%;
+    padding: 0.5rem;
+    font-size: 0.rem;
     font-weight: bold;
 }
 
 .status-ht>p {
     color: #fdcf0c;
-    margin: 0 0.5em
+    margin: 0 0.5rem
 }
 
 .goluri {
-    padding: 1em 0;
+    padding: 1rem 0;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-around;
+
+}
+
+.goluri-stanga, .goluri-dreapta {
+    flex-grow: 0.5;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.goluri-stanga {
-    /* padding: 0 1.5em; */
-    width: 50%;
-    text-align: right;
-    /* margin-right: 2em;
-    padding-right: 7em; */
-}
-
-.goluri-dreapta {
-    width: 50%;
-}
-
 .tabela ul {
-    list-style-image: url(/jucatori/rsz_icon.png);
-    width: 10px;
+    list-style: none;
 }
+.tabela li{
+    vertical-align: middle;
+    background: url(/jucatori/rsz_icon.png) left center no-repeat ;
+    background-size:contain;
+/* background:cover */
+    padding-left:24px;
+}
+
 
 /* #endregion */
 
@@ -407,13 +414,13 @@ form>label{
         color: #fff;
         width: 80%;
         max-width: 1250px;
-        border-radius: 2em;
+        border-radius: 2rem;
     }
 }
 
 @media (max-width:1350px) {
     .pozitie {
-        font-size: 1em;
+        font-size: 1rem;
     }
 
     .profil {
@@ -438,17 +445,17 @@ form>label{
     }
 
     .tabela {
-        font-size: 1.2em;
+        font-size: 1.2rem;
     }
 
     .info-top span:first-of-type {
         /* font-size: 2.2em; */
-        font-size: 1.9em
+        font-size: 1.9rem
     }
 
     .info-top span:last-of-type {
         /* font-size: 1.7em; */
-        font-size: 1.5em;
+        font-size: 1.5rem;
     }
 
     form>label {
@@ -473,7 +480,7 @@ form>label{
 
 @media (max-width: 750px) {
     .tabela {
-        font-size: 0.7em;
+        font-size: 0.7rem;
     }
 
     main {
@@ -482,11 +489,11 @@ form>label{
     }
 
     .team-score>div {
-        margin: 0 0.2em;
+        margin: 0 0.2rem;
     }
 
     .middle {
         /* padding: 1.5em 3em 2em 3em; */
-        padding: 1.5em 1em 1em 1em;
+        padding: 0.6rem 1rem;
     }
 }
