@@ -201,7 +201,7 @@ app.get('/', (req, res) => {
     res.send('Hai Salut');
 })
 
-app.get('/update', async (req, res) => {
+app.get('/update-matches', async (req, res) => {
     const leagues = [
         {
             name: 'SuperLiga',
@@ -214,6 +214,22 @@ app.get('/update', async (req, res) => {
     ];
     await addMatches(leagues[0]);
     //await addMatches(leagues);
+    res.redirect('/SuperLiga');
+})
+
+app.get('/update-table', async (req, res) => {
+    const leagues = [
+        {
+            name: 'SuperLiga',
+            url: 'https://lpf.ro/liga-1'
+        },
+        {
+            name: 'PremierLeague',
+            url: ''
+        }
+    ];
+    //await addMatches(leagues[0]);
+    await updateTable(leagues);
     res.redirect('/SuperLiga');
 })
 

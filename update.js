@@ -66,10 +66,10 @@ async function updateTable(leagues) {
 
 async function addPlayers(match) {
     //console.log(match.url)
-    const players = {
+    let players = {
         hostSquad: [],
         visitSquad: []
-    };
+    }
     await axios(match.url)
         .then((res) => {
             const html = res.data
@@ -78,14 +78,10 @@ async function addPlayers(match) {
             $('#tab_loturi .lista_titulari', html).each(function () {
                 if (i > 1) { return false }
                 const names = $(this).find('.titular-row')
-
-                //console.log('----------')
                 for (let name of names) {
-                    //console.log(name.text())
                     const arr = $(name).text().toUpperCase().split(' ')
-
-                    if (!i) { players.hostSquad.push(arr); }
-                    else { players.visitSquad.push(arr); }
+                    if (!i) { players.hostSquad = players.hostSquad.concat(arr); }
+                    else { players.visitSquad = players.visitSquad.concat(arr); }
 
                 }
                 i++;
@@ -93,24 +89,18 @@ async function addPlayers(match) {
             })
         }).catch((e) => console.log(e))
 
+    //console.log(players)
     return players
 
 }
 
-async function addPlayersDB(players, match, type) {
-    await players.forEach(async (playerFind) => {
-        //console.log(playerFind.last + '  ' + playerFind.first)
-        //console.log(playerFind)
-        const player = await Player.findOne({ last: { $in: playerFind }, first: { $in: playerFind } }).select('_id')
-            .exec((err, res) => {
-                if (res)
-                    match[type].push({
-                        id: res._id
-                    })
-                console.log(err)
-            })
-    });
-    //console.log(match)
+async function addPlayersDB(players, match, type, club) {
+    const jucatori = await Player.find({ last: { $in: players }, first: { $in: players }, team: club }).select('_id')
+    jucatori.forEach(jucator => {
+        match[type].push({
+            id: jucator._id
+        })
+    })
     await match.save()
 }
 
@@ -141,8 +131,9 @@ async function addMatches(league) {
                         if (match.url) {
                             match.url = 'https://lpf.ro/' + match.url
                             const players = await addPlayers(match);
-                            await addPlayersDB(players.hostSquad, match, 'hostSquad');
-                            await addPlayersDB(players.visitSquad, match, 'visitSquad');
+                            console.log(players)
+                            await addPlayersDB(players.hostSquad, match, 'hostSquad', match.host);
+                            await addPlayersDB(players.visitSquad, match, 'visitSquad', match.visit);
 
                         }
                         await match.save()
