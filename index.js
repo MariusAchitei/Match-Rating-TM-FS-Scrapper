@@ -8,7 +8,7 @@ const ejsMate = require('ejs-mate')
 const axios = require('axios')
 var bodyParser = require("body-parser");
 const { Console } = require('console');
-const { updateTable } = require('./update')
+const { updateTable, addMatches } = require('./update')
 //const League = require('./models/league.js')
 
 mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
@@ -78,6 +78,17 @@ app.post('/SuperLiga/matches', async (req, res) => {
     res.redirect('/SuperLiga/matches');
 })
 
+app.get('/SuperLiga/matches/update', async (req, res) => {
+    const leagues =
+    {
+        name: 'SuperLiga',
+        url: 'https://lpf.ro/liga-1'
+    }
+    await addMatches(leagues);
+    res.redirect('/SuperLiga/matches');
+
+})
+
 app.get('/SuperLiga/matches/newMatch', async (req, res) => {
     const liga1 = await League.findOne({ name: 'SuperLiga' });
     //console.log(await liga1.populate('teams'));
@@ -88,6 +99,9 @@ app.get('/SuperLiga/matches/newMatch', async (req, res) => {
 app.get('/SuperLiga/matches/:matchId', async (req, res) => {
     const { matchId } = req.params;
     const meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id visitSquad.id').populate('hostGoals visitGoals', 'first last')
+    // console.log(meci)
+    // console.log('-----------')
+    // res.json(meci)
     res.render('showMatch', { meci })
 })
 
@@ -198,9 +212,9 @@ app.get('/update', async (req, res) => {
             url: ''
         }
     ];
-    await updateTable(leagues);
+    await addMatches(leagues[0]);
+    //await addMatches(leagues);
     res.redirect('/SuperLiga');
-
 })
 
 app.get('*', (req, res) => {

@@ -25,7 +25,7 @@
         <% let jucatori %> 
         <% if(team == 'host'){ jucatori = meci.hostSquad %>
         <% } else { jucatori = meci.visitSquad }%>
-          
+          <h5 style="color: black">(<%= jucatori.length %>) </h5>
         <% for(let jucator of jucatori){ %>  
         <% jucator = jucator.id %>  
         <%if(jucator.position === "Portar" ) { %>

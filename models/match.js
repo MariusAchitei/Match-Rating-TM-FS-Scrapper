@@ -7,6 +7,9 @@ matchSchema = new mongoose.Schema({
         type: String,
         default: '-'
     },
+    url: {
+        type: String
+    },
     league: {
         type: Schema.Types.ObjectId,
         ref: 'League'
