@@ -14,6 +14,10 @@ matchSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'League'
     },
+    etapa: {
+        type: String,
+        default: '0'
+    },
     host: {
         type: Schema.Types.ObjectId,
         ref: 'Team'

@@ -15,6 +15,10 @@ const leagueSchema = new mongoose.Schema({
     url: {
         type: String
     },
+    value: {
+        type: Number,
+        default: 0
+    },
     teams: [
         {
             type: Schema.Types.ObjectId,

@@ -17,8 +17,10 @@
 
     <h1 style="text-align: center;"><%= liga1.name %> </h1>
     <p style="text-align: center;"><%= liga1.country %>'s <%= liga1.tier %> tier </p>
+    <h5><%= liga1.value >= 1000 ? `€${liga1.value/1000}m` : `€${liga1.value}mii` %> </h5>
 
     <a href="/update-table"><button class="btn btn-secondary m-3">update</button></a>
+    <a href="/update-values"><button class="btn btn-secondary m-3">update value</button></a>
 
     <div class="row">
         <div class="container mt-3 mb-5 col-10 offset-1">
@@ -28,6 +30,7 @@
                     <th scope="col" class="pozitie">#</th>
                     <th scope="col" class="logo"></th>
                     <th scope="col" class="nume"></th>
+                    <th scope="col" class="nume">Value</th>
                     <th scope="col" class="played">MJ</th>
                     <th scope="col" class="scored">GM</th>
                     <th scope="col" class="received">GP</th>
@@ -39,6 +42,7 @@
                         <th scope="row"><%= team.tableStats.pos %> </td>
                         <td style=""><a style="margin: auto;" href="/<%= liga1.name %>/<%= team._id %>"><div style="height: 45px; width: 45px; margin:auto;"><img style="height: 90%; width: 90%; margin: auto;"  src="<%= team.logo %>" alt="<%= team.name %>"></div></a></td>
                         <td class="team-name"><a href="/<%= liga1.name %>/<%= team._id %>"><%= team.name %></a> </td>
+                        <td><%= team.value >= 1000 ? `€${team.value/1000}m` : `€${team.value}mii`%></td>
                         <td><%=team.tableStats.played%></td>
                         <td><%=team.tableStats.scored%></td>
                         <td><%=team.tableStats.rec%></td>

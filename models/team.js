@@ -6,8 +6,15 @@ const teamSchema = new mongoose.Schema({
     name: {
         type: String
     },
+    nameTM: {
+        type: String
+    },
     logo: {
         type: String
+    },
+    value: {
+        type: Number,
+        default: 0
     },
     league: {
         type: mongoose.Schema.Types.ObjectId,

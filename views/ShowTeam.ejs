@@ -1,30 +1,58 @@
 <% layout('layouts/boilerplate.ejs') -%> 
 
+    <style>
+        .card-player{
+            width: 18rem; margin-left:auto; margin-right:auto;
+        }
+        .player-num{
+            position:absolute; font-size: 3rem
+        }
+        .player-pos{
+            position:absolute; top:4rem; font-size: 1rem
+        }
+        .player-photo{
+            height: 330px; object-fit: cover; object-position: top; margin-top: 0.5rem;
+        }
+        .player-nat img{
+            width: 30px;
+            height: 18px;
+        }
+
+    </style>
+
     <h1><%= echipa.name %> </h1>
     <img src="<%= echipa.logo %> " alt="">
     <p>Pozitie in clasament: <%= echipa.tablePos %> </p>
+    <!-- <form action="/Superliga/<%= echipa._id %>" method="POST">
+        <label for="numeTM">NumeTM</label>
+        <input id="numeTM" type="text" name="numeTM"> -->
+    </form>
     <h3>Lot: (<%= echipa.squad.length %>) </h3>
     <div class="row">
         <% for(player of echipa.squad){ %>
             <!-- <li><%= player.first + ' ' + player.last  %>---- <%= player.num %>     </li>
             <img src="<%= player.photo %>" alt=""> -->
-            <div class="card mb-3" style="width: 18rem; margin-left:auto; margin-right:auto;">
-                <span style="position:absolute; font-size: 3rem"><%= player.num %></span>
-                <span style="position:absolute; top:4rem; font-size: 1rem"><%= player.position %></span>
-                <img src="<%= player.photo %>" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title"><%= player.first + ' ' + player.last  %></h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <div class="card card-player mb-3">
+                <span class="player-num"><%= player.num %></span>
+                <span class="player-pos"><%= player.position %></span>
+                <img src="<%= player.photo %>" class="card-img-top player-photo" alt="player.first + ' ' + player.last" title="<%=player.first + ' ' + player.last%>">
+                <div class="card-body p-1">
+                    <h5 class="card-title p-0"><%= player.first + ' ' + player.last  %></h5>
+                    <!-- <p class="card-text"></p> -->
                 </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">An item</li>
-                    <li class="list-group-item">A second item</li>
-                    <li class="list-group-item">A third item</li>
+                    <li class="list-group-item">Valoare: <%= player.value >= 1000 ? `€${player.value/1000}m` : `€${player.value}mii`%> </li>
+                    <li class="list-group-item"><%= player.data %> </li>
+                    <% if(player.nat[0]){ %> 
+                    <li class="list-group-item player-nat"><img src="<%= player.nat[0].img %> " alt="<%= player.nat[0].country %>" title="<%= player.nat[0].country %>">  <% if (player.nat.length == 2){ %> <img src="<%= player.nat[1].img %> " alt="<%= player.nat[1].country %>" title="<%= player.nat[1].country %>"> <% } %>      </li>
+                        <% }else{ %>
+                    <li class="list-group-item">unknown</li>
+                            <% } %>  
                 </ul>
-                <div class="card-body">
+                <!-- <div class="card-body">
                     <a href="#" class="card-link">Card link</a>
                     <a href="#" class="card-link">Another link</a>
-                </div>
+                </div> -->
             </div>
         <% } %>
     </div> 

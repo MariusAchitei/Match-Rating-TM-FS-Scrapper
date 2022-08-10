@@ -8,7 +8,7 @@ const ejsMate = require('ejs-mate')
 const axios = require('axios')
 var bodyParser = require("body-parser");
 const { Console } = require('console');
-const { updateTable, addMatches } = require('./update')
+const { updateTable, addMatches, updateValues } = require('./update')
 //const League = require('./models/league.js')
 
 mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
@@ -188,6 +188,16 @@ app.get('/SuperLiga/:teamId', async (req, res) => {
     res.render('ShowTeam', { echipa });
 })
 
+app.post('/SuperLiga/:id', async (req, res) => {
+    const { id } = req.params;
+    const team = await Team.findById(id);
+    team.nameTM = req.body.numeTM.toUpperCase().trim();
+    await team.save()
+    console.log(team.name + ' --- ' + team.nameTM)
+    res.redirect(`/SuperLiga/${id}`)
+
+})
+
 app.get('/api/:teamId', async (req, res) => {
     const { teamId } = req.params;
     const team = await Team.findById(teamId);
@@ -214,7 +224,7 @@ app.get('/update-matches', async (req, res) => {
     ];
     await addMatches(leagues[0]);
     //await addMatches(leagues);
-    res.redirect('/SuperLiga');
+    res.redirect('/SuperLiga/matches');
 })
 
 app.get('/update-table', async (req, res) => {
@@ -233,6 +243,22 @@ app.get('/update-table', async (req, res) => {
     res.redirect('/SuperLiga');
 })
 
+app.get('/update-values', async (req, res) => {
+    const leagues = [
+        {
+            name: 'SuperLiga',
+            url: 'https://www.transfermarkt.com/liga-1/startseite/wettbewerb/RO1'
+        },
+        {
+            name: 'PremierLeague',
+            url: ''
+        }
+    ];
+    //await addMatches(leagues[0]);
+    await updateValues(leagues[0]);
+    console.log('gata')
+    res.redirect('/SuperLiga');
+})
 app.get('*', (req, res) => {
     res.send('Team prins Astrosmechere')
 })

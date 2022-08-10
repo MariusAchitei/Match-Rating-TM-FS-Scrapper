@@ -6,6 +6,10 @@
         border-radius: 3px ;
         color:white;
     }
+    h5{
+        text-align: center;
+        margin:2rem 0;
+    }
 </style>
 
 
@@ -15,22 +19,30 @@
 
     <div class="row">
         <div class="container mt-3 mb-5 col-8 offset-2">
-            <table class="table table-dark table-hover">
-                <thead>
-                    <tr>
-                    <th scope="col">date</th>
-                    <th scope="col" style="text-align: right;">host</th>
-                    <th scope="col" class="host-logo"></th>
-                    <th scope="col" class="host-score"></th>
-                    <th scope="col" class="visit-score"></th>
-                    <th scope="col" class="visit-logo"></th>
-                    <th scope="col">visitor</th>
-                    <th></th>
-                    <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% for(meci of meciuriLiga1){ %>
+                    <% let etapaCurenta = 0%> 
+                    <% for(meci of meciuriLiga1.reverse()){ %>
+                        <% if(etapaCurenta != meci.etapa){ %>
+                            </tbody>
+                            </table>
+                             <h5>Etapa: <%= meci.etapa %> </h5>
+                             <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">date</th>
+                                    <th scope="col" style="text-align: right;">host</th>
+                                    <th scope="col" class="host-logo"></th>
+                                    <th scope="col" class="host-score"></th>
+                                    <th scope="col" class="visit-score"></th>
+                                    <th scope="col" class="visit-logo"></th>
+                                    <th scope="col">visitor</th>
+                                    <th></th>
+                                    <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                             <% etapaCurenta = meci.etapa %>   
+                        <% } %> 
+                         
                     <tr style="max-height: 10px;">
                         <% let date = meci.date.trim().split(' ')  %> 
                         <td> <%= `${date[0]} ${date[1] ? date[1] : ' '}`  %> </td>
@@ -43,7 +55,7 @@
                         <td><%= meci.hostSquad.length %> </td>
                         <td><%= meci.visitSquad.length %></td>
                         <!-- <td>x</td> -->
-                    </tr>
+                    </tr>   
                     <% } %>
                 </tbody>
             </table>

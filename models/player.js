@@ -9,6 +9,10 @@ const playerSchema = new mongoose.Schema({
     first: {
         type: String
     },
+    value: {
+        type: Number,
+        default: 0
+    },
     photo: {
         type: String
     },
@@ -16,8 +20,39 @@ const playerSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Team'
     },
-    nat: {
-        type: String
+    nat: [
+        {
+            country: {
+                type: String,
+                default: 'Unknown'
+            },
+            img: {
+                type: String,
+                default: ''
+            }
+        }
+    ],
+    born: {
+        year: {
+            type: Number,
+            default: undefined
+        },
+        day: {
+            type: Number,
+            default: undefined
+        },
+        month: {
+            type: String,
+            default: undefined
+        },
+        age: {
+            type: Number,
+            default: undefined
+        },
+    },
+    data: {
+        type: String,
+        default: '-'
     },
     position: {
         type: String
