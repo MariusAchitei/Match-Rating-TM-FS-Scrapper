@@ -45,7 +45,7 @@ async function updateTable(leagues) {
                             team.tableStats.scored = scored;
                             team.tableStats.rec = rec;
                             if (team.name == 'FCSB') {
-                                console.log(team.tableStats.pos)
+                                // console.log(team.tableStats.pos)
                             }
                             await team.save()
 
@@ -171,7 +171,7 @@ async function addMatches(league) {
             const $ = cheerio.load(html)
             let i = 0
             let etapa = $(html).find('.list-etape .current').text()
-            console.log(etapa)
+            // console.log(etapa)
             $('.section-title + .clasament_general tr', html).each(async function () {
                 const date = $(this).find('.etapa-meci-data').text();
                 const host = $(this).find('.echipa-etapa-1 a .hiddenMobile').text()
@@ -183,12 +183,24 @@ async function addMatches(league) {
                 if (host) {
                     const hostScore = scoreHost.text();
                     const visitScore = scoreVisit.text();
-                    const Host = await Team.findOne({ name: host.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') })
-                    const Visit = await Team.findOne({ name: visit.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') })
+                    let Host = await Team.findOne({ name: host.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') })
+                    if (!Host) {
+                        Host = await Team.findOne({ aliasName: host.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') })
+                    }
+                    //console.log(Host.name)
+                    let Visit = await Team.findOne({ name: visit.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') })
+                    if (!Visit) {
+                        // console.log(visit.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
+                        Visit = await Team.findOne({ aliasName: visit.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') })
+                        //console.log(Visit.name)
+                    }
+
                     if (Host && Visit) {
-                        if (Match.find({ host: Host._id, visit: Visit._id, date, hostScore, visitScore, url, etapa })) { return false }
-                        Match.find({ host: Host._id, visit: Visit._id, date, hostScore, visitScore, url, etapa });
-                        const match = await new Match({ host: Host._id, visit: Visit._id, date, hostScore, visitScore, url })
+                        if (await Match.findOne({ host: Host._id, visit: Visit._id, date, hostScore, visitScore, etapa })) { return false }
+                        // console.log(Host.name)
+                        //Match.find({ host: Host._id, visit: Visit._id, date, hostScore, visitScore, url, etapa });
+                        const match = new Match({ host: Host._id, visit: Visit._id, date, hostScore, visitScore, url, etapa })
+                        // console.log(Host.name + ' vs  ' + Visit.name)
                         if (match.url) {
                             match.url = 'https://lpf.ro/' + match.url
                             const marcatori = await addScorers(match)
@@ -207,9 +219,6 @@ async function addMatches(league) {
                         }
                         await match.save()
                     }
-
-
-
                 }
             })
         }).catch(err => console.log(err));
@@ -221,33 +230,71 @@ function convertValueToNum(value) {
         return value;
     }
     if (value[value.length - 1] === 'm') {
-        value = parseInt(value.slice(1, value.length - 1)) * 1000;
+        value = parseFloat(value.slice(1, value.length - 1)) * 1000;
         return value;
     }
     return 0
 
 }
 
-async function addValuePlayers(echipa, echipaUrl) {
+async function addValuePlayers(echipaUrl, echipa) {
     axios(echipaUrl)
         .then(async (res) => {
             const html = res.data
             const $ = cheerio.load(html)
-            $('.responsive-table tbody tr', html).each(async function () {
-                const num = parseInt($(this).find('.rn_nummer').text());
 
-                const nume = $(this).find('td tbody span a').text().toUpperCase().trim().split(' ');
-                //console.log(num)
+            // daca echipa nu a fost trimisa, o adaugam in DB
+
+            if (!echipa) {
+                const name = $('.dataName h1 span').text();
+                const logo = $('.dataHeader .dataBild img').attr('src');
+                echipa = new Team({
+                    name,
+                    logo,
+                    squad: [],
+                    results: [],
+                    next: [],
+                })
+            }
+
+            // Iteram prin jucatorii echipei
+
+            console.log(echipa.name)
+
+            for (elem of $('.responsive-table .items>tbody>tr', html)) {
+                let num = parseInt($(elem).find('td:nth-of-type(1) .rn_nummer').text());
+                if (!num) num = 0;
+                const nume = $(elem).find('td:nth-of-type(2) tbody span a').text().toUpperCase().trim().split(' ');
+                const photo = 'https://lpf.ro/images/jucatori/silueta.png'
+
+                //Cautam jucatorul gasit in baza de date
+
                 let jucator
+
                 if (num) {
                     jucator = await Player.findOne({ last: { $in: nume }, num, team: echipa })
                     if (!jucator) { jucator = await Player.findOne({ num, team: echipa }) }
                 }
-                else
-                    jucator = await Player.findOne({ last: { $in: nume }, team: echipa })
-                if (!jucator) { return false }
+                else { jucator = await Player.findOne({ last: { $in: nume }, team: echipa }) }
 
-                let data = $(this).find('td:nth-of-type(4)').text().replaceAll(',', '').replaceAll('(', '').replaceAll(')', '').split(' ')
+                if (!jucator) { continue }
+
+
+                // if (!jucator) {
+                //     //console.log(nume)
+                //     jucator = new Player({
+                //         last: nume[2],
+                //         first: nume[0],
+                //         num,
+                //         team: echipa,
+                //         photo
+                //     })
+                //     echipa.squad.push(jucator);
+                // }
+
+                //console.log(jucator)
+
+                let data = $(elem).find('td:nth-of-type(4)').text().replaceAll(',', '').replaceAll('(', '').replaceAll(')', '').split(' ')
                 if (data) {
                     jucator.born = {
                         month: data[0],
@@ -258,7 +305,7 @@ async function addValuePlayers(echipa, echipaUrl) {
                 }
 
                 if (!jucator.nat.length) {
-                    let nat = $(this).find('td:nth-of-type(5) img').first()
+                    let nat = $(elem).find('td:nth-of-type(5) img').first()
                     if (nat.attr('title')) {
                         jucator.nat.push({
                             country: nat.attr('title'),
@@ -274,37 +321,50 @@ async function addValuePlayers(echipa, echipaUrl) {
                     }
                 }
 
-                let value = $(this).find('td:nth-of-type(6)').text().trim()
+                let value = $(elem).find('td:nth-of-type(6)').text().trim()
                 jucator.value = convertValueToNum(value)
 
                 await jucator.save()
-            })
+            }
+            await echipa.save()
         }).catch(err => console.log(err));
 }
 
-async function updateValues(leagueFind) {
+async function updateValues(leagueFind, leagueUrl) {
     const league = await League.findOne({ name: leagueFind.name }).select('name value _id')
-    console.log(league.name)
+
     let leagueValue = 0
     axios(leagueFind.url)
         .then(async (res) => {
             const html = res.data
             const $ = cheerio.load(html)
+
+            //selectam toate echipele din tabela de clasament si iteram prin ele
+
             for (elem of $('.responsive-table tbody tr', html)) {
+
+                // selectam din tabela numele echipei, link ul si valoarea
+
                 let echipaNume = $(elem).find('.hauptlink a').text().toUpperCase().trim()
                 arr = echipaNume.split(' ');
-                //console.log(echipaNume)
                 const echipaUrl = 'https://www.transfermarkt.com' + $(elem).find('.hauptlink a').attr('href')
+
+                // Cautam echipa in baza de date in functie de numele de pe TM si liga trimisa ca paramentru
+
                 const echipa = await Team.findOne({ nameTM: echipaNume, league }).select('_id name')
-                if (!echipa) { return false }
-                console.log(echipa.name)
+
+                //Daca nu gasim echipa in DB o omitem
+                //DE FACUT adaugarea echipei in acest caz
+
+                if (!echipa) { continue }
+
+                //Adunam valoare totala a ligii
+
                 let value = $(elem).find('td:nth-of-type(7)').text()
-                echipa.value = convertValueToNum(value);
                 leagueValue += convertValueToNum(value);
-                console.log(leagueValue)
-                console.log(echipa.value)
-                await echipa.save()
-                await addValuePlayers(echipa, echipaUrl)
+
+                //await echipa.save()
+                await addValuePlayers(echipaUrl, echipa)
             }
             if (leagueValue)
                 league.value = leagueValue;
@@ -313,4 +373,6 @@ async function updateValues(leagueFind) {
 
 }
 
-module.exports = { updateTable, addMatches, updateValues };
+//addValuePlayers('https://www.transfermarkt.com/dac-dunajska-streda/startseite/verein/4529')
+
+module.exports = { updateTable, addMatches, updateValues, addValuePlayers };
