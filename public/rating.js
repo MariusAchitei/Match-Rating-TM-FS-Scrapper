@@ -12,16 +12,22 @@ for (inputMotm of inputsMotm) {
 function ApasareNote() {
   const labels = this.parentElement.parentElement.children;
   for (let label of labels) {
+    label.classList.remove('invalid');
     label.classList.remove('pressed');
+    //label.classList.add('valid');
   }
   this.parentNode.classList.add('pressed');
+  //this.parentNode.classList.remove('valid');
 }
 
 function ApasareMotm() {
   console.log('bun');
+  const alert = document.querySelector('.alert-warning')
+  alert.classList.add('inactive')
   const labels = document.querySelectorAll('.bottom_motm');
   for (let label of labels) {
     label.classList.remove('pressedMotm');
+    label.classList.remove('potm-invalid');
   }
   this.parentElement.parentElement.classList.add('pressedMotm');
 
@@ -34,13 +40,40 @@ ratingHost.addEventListener('submit', submitListen)
 
 function submitListen(event) {
   event.preventDefault();
+  const array = [...this.elements]
+  let ok = 1, k = 1;
+  if (!this.checkValidity()) {
+    this.classList.add('was-validated')
+    for (element of array) {
+      if (element.parentElement.tagName == 'LABEL' && !element.checkValidity() && element.name != 'potm') {
+        element.parentElement.classList.add('invalid')
+        if (ok) {
+          element.parentElement.scrollIntoView({
+            behavior: 'auto',
+            block: 'center',
+            inline: 'center'
+          });
+          ok = 0
+        }
+      }
+
+      if (!element.checkValidity() && element.name == 'potm' && k) {
+        const alert = document.querySelector('.alert-warning')
+        alert.classList.remove('inactive')
+        //alert('sal')
+        k = 0
+      }
+
+    }
+    return
+  }
+
   //console.log(this.elements);
   const sentData = {
     note: [],
     potm: ''
   };
 
-  const array = [...this.elements]
   array.forEach(input => {
     if (input.checked) {
       if (input.name !== 'potm') {
@@ -86,10 +119,6 @@ function submitListen(event) {
 
       main.appendChild(p);
 
-      //const divs = document.querySelectorAll('.profil')
-      // const ids = document.querySelectorAll('.playerId').value
-      // const lasts = document.querySelectorAll('.lastName').innerText
-      // const firsts = document.querySelectorAll('.firstName').innerText
       const scores = document.querySelectorAll('.scor')
 
       console.log(scores);
@@ -105,7 +134,11 @@ function submitListen(event) {
         i++;
       });
       //console.log(names.innerText)
+      const alert = document.querySelector('.alert-success')
+      alert.classList.remove('inactive')
 
+      const inputs = document.querySelectorAll('input')
+      inputs.forEach(el => el.disabled = true)
     })
     .catch(function (err) {
       console.log(err)

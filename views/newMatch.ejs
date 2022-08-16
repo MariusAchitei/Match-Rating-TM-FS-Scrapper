@@ -6,9 +6,19 @@
 
 <form action="/SuperLiga/matches" method="POST">
  <div class="form-group">
+     <label for="">Selectati liga<select class="select-liga form-control" required name="league" id="">
+            <option value="" disabled selected>Liga</option>
+        <%for(league of leagues){%>
+            <option value="<%= league.id %>"><%= `${league.name}  (${league.country}  ${league.tier ? league.tier : ''})`  %> </option>
+        <% } %>
+     </select></label>
+     <div class="my-3 lista-gazde form-check " >
+     </div>
+<form action="/SuperLiga/matches" method="POST">
+ <div class="form-group">
      <label for="">Selectati echipa gazda<select class="select-gazde form-control" required name="host_id" id="">
             <option value="" disabled selected>echipa gazda</option>
-        <%for(team of liga1.teams){%>
+        <%for(team of liga1){%>
             <option value="<%= team._id %>"><%= team.name %> </option>
         <% } %>
      </select></label>
@@ -18,7 +28,7 @@
  <div class="form-group">
      <label for="">Selectati echipa oaspete<select class="select-oaspeti form-control" required name="visit_id" id="">
         <option value="" disabled selected>echipa oaspete</option>
-        <%for(team of liga1.teams){%>
+        <%for(team of liga1){%>
             <option value="<%= team.id %>"><%= team.name %> </option>
         <% } %>
      </select></label>

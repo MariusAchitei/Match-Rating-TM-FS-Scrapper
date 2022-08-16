@@ -22,12 +22,7 @@ matchSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Team'
     },
-    // hostSquad: [
-    //     {
-    //         type: Schema.Types.ObjectId,
-    //         ref: 'Player'
-    //     }
-    // ],
+
     hostSquad: [
         {
             id: {
@@ -59,12 +54,7 @@ matchSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Team'
     },
-    // visitSquad: [
-    //     {
-    //         type: Schema.Types.ObjectId,
-    //         ref: 'Player'
-    //     }
-    // ],
+
     visitSquad: [
         {
             id: {
@@ -97,7 +87,8 @@ matchSchema = new mongoose.Schema({
         type: Number
     },
     hostScore: {
-        type: String
+        type: String,
+        default: '-'
     },
     hostGoals: [
         // player: {
@@ -112,7 +103,8 @@ matchSchema = new mongoose.Schema({
         // }
     ],
     visitScore: {
-        type: String
+        type: String,
+        default: '-'
     },
     visitGoals: [
         // player: {

@@ -4,11 +4,18 @@ const path = require('path')
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const { League, Match, Player, Team } = require('./models/index.js')
+const { updateTable, addMatches, updateValues, addValuePlayers } = require('./update')
+
+const session = require('express-session')
+const flash = require('connect-flash')
+
 const ejsMate = require('ejs-mate')
+const catchAsync = require('./utils/catchAsync')
 const axios = require('axios')
 var bodyParser = require("body-parser");
-const { Console } = require('console');
-const { updateTable, addMatches, updateValues } = require('./update')
+const superLigaRoutes = require('./routes/SuperLiga.js');
+const teamRoutes = require('./routes/TeamCRUD.js');
+const { AppError } = require('./utils/appError.js');
 //const League = require('./models/league.js')
 
 mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
@@ -20,7 +27,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
         console.log('Baza e jos, verifica cablajele!');
     })
 
-
 app.use(bodyParser.json());   // Transforma datele de la axios.post
 app.use(express.static('public'));
 app.engine('ejs', ejsMate)
@@ -29,189 +35,84 @@ app.set('views', path.join(__dirname, '/views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'))
 
-app.get('/SuperLiga', async (req, res) => {
-    const liga1 = await League.findOne({ name: 'SuperLiga' }).populate('teams', 'tablePos name');
-    const echipe = await Team.find({ league: liga1._id }).sort('tableStats.pos')
-    // console.log(echipe)
+const sessionConfig = {
+    secret: 'MagazinulFP',
+    resave: false,
+    saveUninitialized: true
+}
 
-    res.render('Teams', { liga1, echipe });
+app.use(session(sessionConfig))
+app.use(flash())
 
+app.use((req, res, next) => {
+    res.locals.succes = req.flash('succes')
+    res.locals.error = req.flash('error')
+    next();
 })
 
-app.get('/SuperLiga/matches', async (req, res) => {
-    const meciuriLiga1 = await Match.find().populate('host', 'name logo').populate('visit', 'name logo');
-    // await meciuriLiga1.populate('host')
-    // await meciuriLiga1.populate('visit')
+app.use('/leagues', superLigaRoutes)
+
+app.use('/Teams', teamRoutes)
+
+
+app.get('/matches', catchAsync(async (req, res) => {
+    const meciuriLiga1 = await Match.find().populate('host', 'name logo').populate('visit', 'name logo')
 
     res.render('matches', { meciuriLiga1 })
 
-})
+}))
 
-app.post('/SuperLiga/matches', async (req, res) => {
-    const { host_id, visit_id, host_players, visit_players, host_goals, visit_goals } = req.body;
-    const match = new Match({
-        host: host_id,
-        visit: visit_id,
-        hostGoals: host_goals,
-        visitGoals: visit_goals,
-    })
-
-    match.hostScore = match.hostGoals.length;
-    match.visitScore = match.visitGoals.length
-
-    if (host_players)
-        host_players.forEach(player => {
-            match.hostSquad.push({
-                id: player
-            })
-        });
-    if (visit_players)
-        visit_players.forEach(player => {
-            match.visitSquad.push({
-                id: player
-            })
-        });
-
-
-    await match.save()
-
-    res.redirect('/SuperLiga/matches');
-})
-
-app.get('/SuperLiga/matches/update', async (req, res) => {
-    const leagues =
-    {
-        name: 'SuperLiga',
-        url: 'https://lpf.ro/liga-1'
-    }
-    await addMatches(leagues);
-    res.redirect('/SuperLiga/matches');
-
-})
-
-app.get('/SuperLiga/matches/newMatch', async (req, res) => {
-    const liga1 = await League.findOne({ name: 'SuperLiga' });
-    //console.log(await liga1.populate('teams'));
-    await liga1.populate('teams')
-    res.render('newMatch', { liga1 })
-})
-
-app.get('/SuperLiga/matches/:matchId', async (req, res) => {
-    const { matchId } = req.params;
-    const meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id visitSquad.id').populate('hostGoals visitGoals', 'first last')
-    // console.log(meci)
-    // console.log('-----------')
-    // res.json(meci)
-    res.render('showMatch', { meci })
-})
-
-app.get('/SuperLiga/matches/:matchId/:team', async (req, res) => {
-    const { matchId, team } = req.params;
-    let meci;
-    if (team == 'host') {
-        meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id').populate('hostGoals visitGoals', 'first last')
-    }
-    else {
-        meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('visitSquad.id').populate('visitGoals hostGoals', 'first last')
-    }
-    res.render('showRatings', { meci, team })
-})
-
-
-app.post('/SuperLiga/matches/:matchId', async (req, res) => {
-
-    const { meci: meciId, team: team, note: note, potm: potmId } = req.body;
-    const meci = await Match.findById(meciId)
-
-    console.log(team);
-
-    //adauga vot omul meciului
-    let i = 0;
-    let findPotm = {
-        id: '',
-        voturi: 0,
-    }
-    let total = 0;
-
-    let players
-
-    if (team == 'host') {
-        players = meci.hostSquad;
-        console.log('salut')
-    }
-    else {
-        players = meci.visitSquad;
-        console.log('pa')
-    }
-
-    for (let player of players) {
-        if (note[i].id == player.id) {
-            player.nota += parseInt(note[i].score);
-            //console.log(typeof (note[i].score))
-            player.voturi++;
-            i++;
-            //console.log(player)
-        }
-        if (player.id == potmId) {
-            player.potm.voturi++;
-            total++;
-        }
-        if (player.potm.voturi > findPotm.voturi) {
-            findPotm.id = player.id;
-            findPotm.voturi = player.potm.voturi;
-        }
-
-    }
-    if (team == 'host') {
-        meci.hostPotm.id = await Player.findById(findPotm.id);
-        meci.hostPotm.curent = findPotm.voturi;
-        meci.hostPotm.total += total
-    }
-    else {
-        meci.visitPotm.id = await Player.findById(findPotm.id);
-        meci.visitPotm.curent = findPotm.voturi;
-        meci.visitPotm.total += total
-    }
-    //console.log(meci.potm)
-    await meci.save()
-
-    res.json(meci)
-
-})
-
-app.get('/SuperLiga/:teamId', async (req, res) => {
-    const liga1 = await League.findOne({ name: 'SuperLiga' });
-    const { teamId } = req.params;
-    const echipa = await Team.findById(teamId);
-    await echipa.populate('league')
-    await echipa.populate('squad')
-    res.render('ShowTeam', { echipa });
-})
-
-app.post('/SuperLiga/:id', async (req, res) => {
+app.get('/players/:id/edit', catchAsync(async (req, res) => {
     const { id } = req.params;
-    const team = await Team.findById(id);
-    team.nameTM = req.body.numeTM.toUpperCase().trim();
-    await team.save()
-    console.log(team.name + ' --- ' + team.nameTM)
-    res.redirect(`/SuperLiga/${id}`)
+    const player = await Player.findById(id);
 
-})
+    res.render('edit-player', { player })
+}))
 
-app.get('/api/:teamId', async (req, res) => {
+app.delete('/players/:id', catchAsync(async (req, res) => {
+    const { id } = req.params
+    console.log('sal')
+
+    const player = await Player.findById(id).populate('team')
+    for (let i in player.team.squad) {
+        if (player.team.squad[i] == player.id)
+            player.team.squad.splice(i, 1)
+    }
+    await player.team.save()
+    const team = player.team._id
+    await Player.findByIdAndRemove(id)
+    res.redirect(`/SuperLiga/${team}`)
+}))
+
+app.patch('/players/:id', catchAsync(async (req, res) => {
+
+    const { id } = req.params;
+    const { first, last, photo, club, num, position } = req.body
+
+    //const leagues = await League.find({})
+    let player = await Player.findById(id)
+    // .populate('league', 'name')
+
+    // res.render('editTeam', { echipa, leagues });
+    player = Object.assign(player, { first, last, photo, club, num, position })
+    await player.save()
+    res.redirect(`/Superliga/${player.team}`)
+}))
+
+app.get('/api/:teamId', catchAsync(async (req, res) => {
     const { teamId } = req.params;
     const team = await Team.findById(teamId);
     await team.populate('squad');
     res.json(team);
 
-})
+}))
 
 app.get('/', (req, res) => {
 
     res.send('Hai Salut');
 })
 
-app.get('/update-matches', async (req, res) => {
+app.get('/update-matches', catchAsync(async (req, res) => {
     const leagues = [
         {
             name: 'SuperLiga',
@@ -225,9 +126,9 @@ app.get('/update-matches', async (req, res) => {
     await addMatches(leagues[0]);
     //await addMatches(leagues);
     res.redirect('/SuperLiga/matches');
-})
+}))
 
-app.get('/update-table', async (req, res) => {
+app.get('/update-table', catchAsync(async (req, res) => {
     const leagues = [
         {
             name: 'SuperLiga',
@@ -241,9 +142,9 @@ app.get('/update-table', async (req, res) => {
     //await addMatches(leagues[0]);
     await updateTable(leagues);
     res.redirect('/SuperLiga');
-})
+}))
 
-app.get('/update-values', async (req, res) => {
+app.get('/update-values', catchAsync(async (req, res) => {
     const leagues = [
         {
             name: 'SuperLiga',
@@ -258,10 +159,56 @@ app.get('/update-values', async (req, res) => {
     await updateValues(leagues[0]);
     console.log('gata')
     res.redirect('/SuperLiga');
+}))
+
+app.get('/add-league', catchAsync(async (req, res) => {
+    const leagues = [
+        // {
+        //     name: "BUNDESLIGA",
+        //     url: "https://www.transfermarkt.com/bundesliga/startseite/wettbewerb/L1"
+        // },
+        {
+            name: 'LIGUE 1',
+            url: 'https://www.transfermarkt.com/ligue-1/startseite/wettbewerb/FR1'
+        },
+        {
+            name: 'SERIE A',
+            url: 'https://www.transfermarkt.com/serie-a/startseite/wettbewerb/IT1'
+        },
+        {
+            name: 'PremierLeague',
+            url: 'https://www.transfermarkt.com/premier-league/startseite/wettbewerb/GB1'
+        },
+        {
+            name: 'LaLiga',
+            url: 'https://www.transfermarkt.com/laliga/startseite/wettbewerb/ES1'
+        }
+    ];
+    for (let league of leagues) {
+        await updateValues(league);
+    }
+    console.log('gata')
+    res.redirect('/teams');
+}))
+
+app.get('/error', (req, res) => {
+    throw new AppError('Vai vai', 500)
+    //return
+    //res.send('sal')
 })
-app.get('*', (req, res) => {
-    res.send('Team prins Astrosmechere')
-})
+
+// app.use((req, res, next) => {
+//     next(new AppError('Nu mai avem', 404))
+// })
+
+// app.use((err, req, res, next) => {
+//     const { status = 500, message = 'ceva nu i bine' } = err
+//     if (!err.message) err.message = 'ceva nu i bine'
+//     if (!err.status) err.status = 500
+//     //console.log()
+//     // res.status(status).render('error', { err })
+//     // next()
+// })
 
 
 app.listen(2000, () => {

@@ -9,6 +9,14 @@ const teamSchema = new mongoose.Schema({
     nameTM: {
         type: String
     },
+    aliasName: {
+        type: String,
+        default: ''
+    },
+    url: {
+        type: String,
+        default: ''
+    },
     logo: {
         type: String
     },
@@ -18,7 +26,7 @@ const teamSchema = new mongoose.Schema({
     },
     league: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'League'
+        ref: 'League',
     },
     tableStats: {
         pcts: {

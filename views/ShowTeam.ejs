@@ -17,23 +17,36 @@
             width: 30px;
             height: 18px;
         }
+        .value, .data{
+            font-weight: bolder ;color: #1C3879;
+        }
 
     </style>
 
+        <a href="/leagues/<%=echipa.league._id%>"><button class="btn btn-primary">back</button></a>
+
     <h1><%= echipa.name %> </h1>
     <img src="<%= echipa.logo %> " alt="">
-    <p>Pozitie in clasament: <%= echipa.tablePos %> </p>
-    <!-- <form action="/Superliga/<%= echipa._id %>" method="POST">
-        <label for="numeTM">NumeTM</label>
-        <input id="numeTM" type="text" name="numeTM"> -->
+    <p>Pozitie in clasament: <%= echipa.tableStats.pos %> </p>
+    <a class="my-1" href="/Teams/<%= echipa._id %>/edit"><button class="btn btn-warning">Edit</button></a>
+    <form action="/teams/<%= echipa._id %>">
+        <label for="select">sort</label>
+        <select name="sort" id="select">
+            <option value="num">Numar</option>
+            <option value="value">value</option>
+            <option value="old">age descresc</option>
+            <option value="young">age cresc</option>
+        </select>
+        <button class="btn btn-success">submit</button>
     </form>
+
     <h3>Lot: (<%= echipa.squad.length %>) </h3>
     <div class="row">
         <% for(player of echipa.squad){ %>
             <!-- <li><%= player.first + ' ' + player.last  %>---- <%= player.num %>     </li>
             <img src="<%= player.photo %>" alt=""> -->
             <div class="card card-player mb-3">
-                <span class="player-num"><%= player.num %></span>
+                <span class="player-num"><%= player.num ? player.num : '-' %></span>
                 <span class="player-pos"><%= player.position %></span>
                 <img src="<%= player.photo %>" class="card-img-top player-photo" alt="player.first + ' ' + player.last" title="<%=player.first + ' ' + player.last%>">
                 <div class="card-body p-1">
@@ -41,13 +54,14 @@
                     <!-- <p class="card-text"></p> -->
                 </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Valoare: <%= player.value >= 1000 ? `€${player.value/1000}m` : `€${player.value}mii`%> </li>
-                    <li class="list-group-item"><%= player.data %> </li>
+                    <li class="list-group-item value">Valoare: <%= player.value >= 1000 ? `€${player.value/1000}m` : `€${player.value}mii`%> </li>
+                <li class="list-group-item data"><%= player.born.day ? `${player.born.day} ${player.born.month} ${player.born.year}, (${player.born.age})` : '' %> </li>
                     <% if(player.nat[0]){ %> 
                     <li class="list-group-item player-nat"><img src="<%= player.nat[0].img %> " alt="<%= player.nat[0].country %>" title="<%= player.nat[0].country %>">  <% if (player.nat.length == 2){ %> <img src="<%= player.nat[1].img %> " alt="<%= player.nat[1].country %>" title="<%= player.nat[1].country %>"> <% } %>      </li>
                         <% }else{ %>
                     <li class="list-group-item">unknown</li>
-                            <% } %>  
+                            <% } %> 
+                    <li class="list-group-item data"><a class="text-primary" href="/players/<%= player._id %>/edit "><button class="btn btn-warning btn-sm">Edit</button></a></li>  
                 </ul>
                 <!-- <div class="card-body">
                     <a href="#" class="card-link">Card link</a>

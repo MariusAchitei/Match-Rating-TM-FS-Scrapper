@@ -1,0 +1,26 @@
+<% layout('layouts/boilerplate.ejs') -%> 
+
+    <style>
+        td, th{
+            padding: 0 !important;
+            text-align: center;
+            vertical-align: middle;
+        }
+        thead th{
+            padding:0.4rem 0 !important;
+            background-color: black !important;
+        }
+        .team-name{
+            text-align: left;
+        }
+        a{
+            color: black;
+        }
+    </style>
+
+
+<ul>
+    <% for(echipa of echipe){ %>
+        <li><a href="/teams/<%=echipa._id %>"><%= echipa.name %></a> </li> 
+    <% } %> 
+</ul>

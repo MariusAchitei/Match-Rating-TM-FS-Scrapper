@@ -1,0 +1,56 @@
+<% layout('layouts/boilerplate.ejs') -%> 
+<style>
+
+</style>
+
+<form class="my-2" action="/Teams/<%= echipa._id %>?_method=DELETE" method="post">
+  <button class="btn btn-danger btn-sm">Delete</button>
+</form>
+
+<form action="/Teams/<%= echipa._id %>?_method=PATCH" method="post">
+    <div class="d-block col-md-6">
+      <label for="name" class="form-label">Team name</label>
+      <input value="<%=echipa.name%>" type="text" class="form-control" id="name" name="name">
+    </div>
+    <div class="d-block col-md-6">
+      <label for="logo" class="form-label">Team logo</label>
+      <input value="<%= echipa.logo %>" type="url" class="form-control" id="logo" name="logo">
+    </div>
+    <div class="d-block col-md-6">
+        <label for="nameTM" class="form-label">Team nameTM</label>
+        <input value="<%= echipa.nameTM %>" type="text" class="form-control" id="nameTM" name="nameTM">
+    </div>
+    <div class="d-block col-md-6">
+        <label for="aliasName" class="form-label">Team Alias</label>
+        <input value="<%= echipa.aliasName %>" type="text" class="form-control" id="aliasName" name="aliasName">
+    </div>
+    <div class="d-block col-md-6">
+        <label for="url" class="form-label">Team TM-Url</label>
+        <input value="<%= echipa.url %>" type="url" class="form-control" id="url" name="url">
+      </div>
+    <div class="d-block col-md-4">
+      <label for="inputState" class="form-label">League</label>
+      <select id="inputState" class="form-select">
+        <%  %> 
+        <option disabled value="">Alegeti liga</option>
+        <% for(let league of leagues){ %>
+            <option <%= league._id == echipa.league ? "selected" : '' %>  value="<%= league._id %>"><%= league.name %> </option>
+        <% } %>  
+      </select>
+    </div>
+    <!-- <div class="d-block col-md-2">
+      <label for="inputZip" class="form-label">Zip</label>
+      <input type="text" class="form-control" id="inputZip">
+    </div> -->
+    <!-- <div class="d-block col-12">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="gridCheck">
+        <label class="form-check-label" for="gridCheck">
+          Check me out
+        </label>
+      </div> -->
+    </div>
+    <div class="col-12 my-3">
+      <button type="submit" class="btn btn-success">Edit</button>
+    </div>
+  </form>
