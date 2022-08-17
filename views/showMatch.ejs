@@ -14,9 +14,9 @@
     }
 </style>
 
-<form action="/SuperLiga/matches/<%= meci._id %>?_method=DELETE" method="post"><button class="btn btn-danger">Delete</button></form>
+<form action="/matches/<%= meci._id %>?_method=DELETE" method="post"><button class="btn btn-danger">Delete</button></form>
 
-<h2><a href="/SuperLiga/matches/<%= meci._id %>/host"><%= meci.host.name %></a>   vs   <a href="/SuperLiga/matches/<%= meci._id %>/visit"><%= meci.visit.name %></a>  </h2>
+<h2><a href="/matches/<%= meci._id %>/host"><%= meci.host.name %></a>   vs   <a href="/matches/<%= meci._id %>/visit"><%= meci.visit.name %></a>  </h2>
 
 <main>
     <div class="tabela">

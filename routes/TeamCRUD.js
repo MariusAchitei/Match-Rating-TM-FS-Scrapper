@@ -19,6 +19,18 @@ router.get('/', async (req, res) => {
 
 })
 
+router.get('/new', async (req, res) => {
+    const leagues = await League.find({})
+    res.render('newTeam', { leagues })
+})
+
+router.post('/', async (req, res) => {
+    const { name, logo, nameTM, aliasName, url, league } = req.body
+    const team = new Team({ name, logo, nameTM, aliasName, url, league })
+    await team.save()
+    res.redirect(`teams/${team._id}`)
+})
+
 router.get('/:teamId', catchAsync(async (req, res) => {
 
     const liga1 = await League.findOne({ name: 'SuperLiga' });
@@ -85,7 +97,7 @@ router.patch('/:teamId', catchAsync(async (req, res) => {
     // res.render('editTeam', { echipa, leagues });
     echipa = Object.assign(echipa, { name, logo, url, nameTM, aliasName })
     await echipa.save()
-    res.redirect(`/SuperLiga/${echipa._id}`)
+    res.redirect(`/teams/${echipa._id}`)
 }))
 
 module.exports = router

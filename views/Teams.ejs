@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate.ejs') -%> 
 
     <style>
-        td, th{
+        td, th {
             padding: 0 !important;
             text-align: center;
             vertical-align: middle;
@@ -13,12 +13,27 @@
         .team-name{
             text-align: left;
         }
+        .container-logo{
+            display: flex;
+            justify-content: center;
+        }
+        .league-logo{
+            
+        }
     </style>
 
     <a href="/leagues/<%= liga1._id %>/matches "><button class="btn btn-primary">Meciuri</button></a>
     <br>
     <a href="/update-table"><button class="btn btn-secondary m-3">update</button></a>
     <a href="/update-values"><button class="btn btn-secondary m-3">update value</button></a>
+    <br>
+    <a href="/leagues/<%= liga1._id %>/edit "><button class="btn btn-warning">Edit</button></a>
+
+    <h1 style="text-align: center;"><%= liga1.name %> </h1>
+    <p style="text-align: center;"><%= liga1.country %>'s <%= liga1.tier %> tier </p>
+    <div class="container-logo"><img class="league-logo" src="<%= liga1.photo %> " alt=""></div>
+    <% console.dir(liga1.photo) %> 
+
 
     <div class="row">
         <div class="container mt-3 mb-5 col-10 offset-1">
@@ -72,7 +87,7 @@
                     <% if (player){ %> 
                     <tr>
                         <th><%= i++ %> </th>
-                        <td ><a style="margin: auto;" href="/<%= liga1.name %>/<%= team._id %>"><div style="height: 50px; width: 40px; display: flex; align-items: center; justify-content: center;"><img style="height: 80%; width: 80%; object-fit: cover; "  src="<%= player.team.logo %>" alt="<%= player.team.name %>"></div></a></td>
+                        <td ><a style="margin: auto;" href="/teams/<%= team._id %>"><div style="height: 50px; width: 40px; display: flex; align-items: center; justify-content: center;"><img style="height: 80%; width: 80%; object-fit: cover; "  src="<%= player.team.logo %>" alt="<%= player.team.name %>"></div></a></td>
                         <td><div style="height: 45px; width: 45px; margin:auto; overflow: hidden; display: flex; justify-content: center;"><img style="height: 250%; width: 250%; margin: auto; object-fit: cover; object-position: top; margin: auto;"  src="<%= player.photo %>" alt=""></div></td>
                         <td><%= player.first + ' ' + player.last %> </td>
                         <td><%= player.value >= 1000 ? `€${player.value/1000}m` : `€${player.value}mii`%></td>

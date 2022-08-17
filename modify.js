@@ -44,10 +44,19 @@ function photo() {
         }).catch(err => console.log(err));
 }
 
-async function addTeamToLeague(ids) {
-    for (let id of ids) {
-        let league = await League.findById(id)
+async function switchFlag() {
+    const players = await Player.find({})
+    players.forEach(async (player) => {
+        if (player.nat.length) {
+            player.nat.forEach(async (nat) => {
+                const arr = nat.img.split('/')
+                arr[5] = 'medium'
+                const img = arr.join('/')
+                console.log(img)
+                nat.img = img
 
-
-    }
-} 
+            })
+            await player.save()
+        }
+    })
+}

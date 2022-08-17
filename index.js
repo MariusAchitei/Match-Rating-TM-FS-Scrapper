@@ -13,8 +13,11 @@ const ejsMate = require('ejs-mate')
 const catchAsync = require('./utils/catchAsync')
 const axios = require('axios')
 var bodyParser = require("body-parser");
-const superLigaRoutes = require('./routes/SuperLiga.js');
+
+const superLigaRoutes = require('./routes/leagueCRUD.js');
 const teamRoutes = require('./routes/TeamCRUD.js');
+const matchRoutes = require('./routes/matchCRUD.js');
+const playerRoutes = require('./routes/playerCRUD.js');
 const { AppError } = require('./utils/appError.js');
 //const League = require('./models/league.js')
 
@@ -54,50 +57,10 @@ app.use('/leagues', superLigaRoutes)
 
 app.use('/Teams', teamRoutes)
 
+app.use('/matches', matchRoutes)
 
-app.get('/matches', catchAsync(async (req, res) => {
-    const meciuriLiga1 = await Match.find().populate('host', 'name logo').populate('visit', 'name logo')
+app.use('/players', playerRoutes)
 
-    res.render('matches', { meciuriLiga1 })
-
-}))
-
-app.get('/players/:id/edit', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const player = await Player.findById(id);
-
-    res.render('edit-player', { player })
-}))
-
-app.delete('/players/:id', catchAsync(async (req, res) => {
-    const { id } = req.params
-    console.log('sal')
-
-    const player = await Player.findById(id).populate('team')
-    for (let i in player.team.squad) {
-        if (player.team.squad[i] == player.id)
-            player.team.squad.splice(i, 1)
-    }
-    await player.team.save()
-    const team = player.team._id
-    await Player.findByIdAndRemove(id)
-    res.redirect(`/SuperLiga/${team}`)
-}))
-
-app.patch('/players/:id', catchAsync(async (req, res) => {
-
-    const { id } = req.params;
-    const { first, last, photo, club, num, position } = req.body
-
-    //const leagues = await League.find({})
-    let player = await Player.findById(id)
-    // .populate('league', 'name')
-
-    // res.render('editTeam', { echipa, leagues });
-    player = Object.assign(player, { first, last, photo, club, num, position })
-    await player.save()
-    res.redirect(`/Superliga/${player.team}`)
-}))
 
 app.get('/api/:teamId', catchAsync(async (req, res) => {
     const { teamId } = req.params;
@@ -123,9 +86,9 @@ app.get('/update-matches', catchAsync(async (req, res) => {
             url: ''
         }
     ];
-    await addMatches(leagues[0]);
+    const league = await addMatches(leagues[0]);
     //await addMatches(leagues);
-    res.redirect('/SuperLiga/matches');
+    res.redirect(`/leagues/${league}/matches`);
 }))
 
 app.get('/update-table', catchAsync(async (req, res) => {
@@ -163,10 +126,14 @@ app.get('/update-values', catchAsync(async (req, res) => {
 
 app.get('/add-league', catchAsync(async (req, res) => {
     const leagues = [
-        // {
-        //     name: "BUNDESLIGA",
-        //     url: "https://www.transfermarkt.com/bundesliga/startseite/wettbewerb/L1"
-        // },
+        {
+            name: 'LIGA PORTUGAL',
+            url: 'https://www.transfermarkt.com/liga-nos/startseite/wettbewerb/PO1'
+        },
+        {
+            name: "BUNDESLIGA",
+            url: "https://www.transfermarkt.com/bundesliga/startseite/wettbewerb/L1"
+        },
         {
             name: 'LIGUE 1',
             url: 'https://www.transfermarkt.com/ligue-1/startseite/wettbewerb/FR1'

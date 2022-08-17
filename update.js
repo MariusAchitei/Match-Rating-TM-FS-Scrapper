@@ -246,6 +246,7 @@ async function addMatches(league) {
                 }
             })
         }).catch(err => console.log(err));
+    return leagueF._id
 }
 
 function convertValueToNum(value) {

@@ -12,6 +12,10 @@ const leagueSchema = new mongoose.Schema({
     tier: {
         type: Number
     },
+    photo: {
+        type: String,
+        default: '/utils/not-defined'
+    },
     url: {
         type: String
     },
