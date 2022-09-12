@@ -1,26 +1,35 @@
-<% layout('layouts/boilerplate.ejs') -%> 
+<% layout('layouts/boilerplate.ejs') -%>
 
     <style>
-        td, th{
+        td,
+        th {
             padding: 0 !important;
             text-align: center;
             vertical-align: middle;
         }
-        thead th{
-            padding:0.4rem 0 !important;
+
+        thead th {
+            padding: 0.4rem 0 !important;
             background-color: black !important;
         }
-        .team-name{
+
+        .team-name {
             text-align: left;
         }
-        a{
+
+        a {
             color: black;
         }
     </style>
 
+    <a href="/leagues/new"><button class="btn btn-secondary m-3">new League</button></a>
+    <a href="/leagues/update-all"><button class="btn btn-primary">update Tables</button></a>
+    <a href="/leagues/update-allMatches"><button class="btn btn-primary">update Matches</button></a>
 
-<ul>
-    <% for(let league of leagues){ %>
-        <li><a href="/leagues/<%=league._id %>"><%= league.name %></a> </li> 
-    <% } %> 
-</ul>
+    <ul>
+        <% for(let league of leagues){ %>
+            <li><a href="/leagues/<%=league._id %>">
+                    <%= league.name %>
+                </a> </li>
+            <% } %>
+    </ul>

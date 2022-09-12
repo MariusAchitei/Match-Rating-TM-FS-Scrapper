@@ -92,7 +92,7 @@ function submitListen(event) {
 
   axios({
     method: 'post',
-    url: `/Superliga/matches/${this.elements[0].value}`,
+    url: `/matches/${this.elements[0].value}`,
     data: {
       meci: this.elements[0].value,
       team: this.elements[1].value,

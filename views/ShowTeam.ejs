@@ -1,4 +1,5 @@
 <% layout('layouts/boilerplate.ejs') -%> 
+<link rel="stylesheet" href="/matchesStyle.css">
 
     <style>
         .card-player{
@@ -42,6 +43,7 @@
         <button class="btn btn-success">submit</button>
     </form>
 
+    <h3>Value: <%= echipa.valueString %> </h3>
     <h3>Lot: (<%= echipa.squad.length %>) </h3>
     <div class="row">
         <% for(player of echipa.squad){ %>
@@ -56,7 +58,7 @@
                     <!-- <p class="card-text"></p> -->
                 </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item value">Valoare: <%= player.value >= 1000 ? `€${player.value/1000}m` : `€${player.value}mii`%> </li>
+                    <li class="list-group-item value">Valoare: <%= player.valueString %> </li>
                 <li class="list-group-item data"><%= player.born.day ? `${player.born.day} ${player.born.month} ${player.born.year}, (${player.born.age})` : '' %> </li>
                     <% if(player.nat[0]){ %> 
                     <li class="list-group-item player-nat"><img src="<%= player.nat[0].img %> " alt="<%= player.nat[0].country %>" title="<%= player.nat[0].country %>">  <% if (player.nat.length == 2){ %> <img src="<%= player.nat[1].img %> " alt="<%= player.nat[1].country %>" title="<%= player.nat[1].country %>"> <% } %>      </li>
@@ -71,4 +73,56 @@
                 </div> -->
             </div>
         <% } %>
-    </div> 
+    </div>
+    <%if(matches.length){ %>
+    <hr>
+    <h5>Meciuri</h5>
+    <div class="row">
+        <div class="container mt-3 mb-5 col-8 offset-2">
+                    <% let status = !matches[0].status%> 
+                    <% for(meci of matches){ %>
+                        <% if(!meci.host || !meci.visit) continue %> 
+                        <% if(status !== meci.status){ %>                             
+                            </tbody>
+                            </table>
+                            <h5><%= meci.status ? 'Rezultate' : 'Meciuri' %> </h5>
+
+                             <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">date</th>
+                                    <th scope="col" style="text-align: right;">host</th>
+                                    <th scope="col" class="host-logo"></th>
+                                    <th scope="col" class="host-score"></th>
+                                    <th scope="col" class="visit-score"></th>
+                                    <th scope="col" class="visit-logo"></th>
+                                    <th scope="col">visitor</th>
+                                    <th></th>
+                                    <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                             <% status = meci.status %>   
+                        <% } %> 
+                         
+                    <tr style="max-height: 10px;">
+                        <% let date = meci.date.trim().split(' ')  %> 
+                        <td> <%= `${date[0]} ${date[1] ? date[1] : ' '}`  %> </td>
+                        <td class="" style="text-align:right;"><a href="/matches/<%= meci._id %>"><%= meci.host.name %></a> </td>
+                        <!-- <td class="" style="padding: 0"><a href="/SuperLiga/matches/<%= meci._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= meci.host.logo %>" alt=""></div></a></td> -->
+                        <td ><a style="margin: 0; padding:0" href="/matches/<%= meci._id %>"><div style="height: 50px; width: 40px; display: flex; align-items: center; justify-content: center;margin:auto;"><img style="height: 90%; width: 90%; margin-top: auto; object-fit: cover;"  src="<%= meci.host.logo %>" alt="<%= meci.host.name %>"></div></a></td>
+                        <td class="" style="text-align:center ;"><span class="scor"><%= meci.hostScore ? meci.hostScore : '-' %></span> </td>
+                        <td class="" style="text-align:center ;"><span class="scor"><%= meci.visitScore ? meci.visitScore : '-'   %></span> </td>
+                        <td ><a style="margin: 0; padding:0" href="/matches/<%= meci._id %>"><div style="height: 50px; width: 40px; display: flex; align-items: center; justify-content: center;margin:auto;"><img style="height: 90%; width: 90%; margin-top: auto; object-fit: cover;"  src="<%= meci.visit.logo %>" alt="<%= meci.visit.name %>"></div></a></td>
+                        <!-- <td class="" style="padding: 0"><a href="/SuperLiga/matches/<%= meci._id %>"><div style="height: 50px; width: 50px; margin:auto;"><img style="height: 100%; width: 100%; margin-left: auto;"  src="<%= meci.visit.logo %>" alt=""></div></a></td> -->
+                        <td><a href="/matches/<%= meci._id %>"><%= meci.visit.name %></a> </td>
+                        <td><%= meci.hostSquad.length %> </td>
+                        <td><%= meci.visitSquad.length %></td>
+                        <!-- <td>x</td> -->
+                    </tr>   
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <% } %> 

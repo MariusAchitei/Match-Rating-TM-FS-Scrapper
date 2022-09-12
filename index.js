@@ -72,7 +72,7 @@ app.get('/api/:teamId', catchAsync(async (req, res) => {
 
 app.get('/', (req, res) => {
 
-    res.send('Hai Salut');
+    res.render('Hai-Salut');
 })
 
 app.get('/update-matches', catchAsync(async (req, res) => {

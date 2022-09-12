@@ -1,0 +1,25 @@
+.scor {
+    background-color: rgb(2, 78, 2);
+    padding: 2px 8px;
+    border-radius: 3px;
+    color: white;
+}
+
+h5 {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+thead th {
+    /* padding:0.4rem 0 !important; */
+    background-color: black !important;
+}
+
+td {
+    padding: 0;
+    vertical-align: middle;
+}
+
+td div img, td div {
+    margin: 0
+}

@@ -1,0 +1,112 @@
+<% layout('layouts/boilerplate.ejs') -%>
+
+    <style>
+        td,
+        th {
+            padding: 0 !important;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        thead th {
+            padding: 0.4rem 0 !important;
+            background-color: black !important;
+        }
+
+        .team-name {
+            text-align: left;
+        }
+
+        .container-logo {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+
+    <a href="/leagues/<%= liga1._id %>/matches "><button class="btn btn-primary">Rezultate</button></a>
+    <a href="/leagues/<%= liga1._id %>/matches/meciuri "><button class="btn btn-primary">Meciuri</button></a>
+    <br>
+    <!-- <a href="/update-table"><button class="btn btn-secondary m-3">update</button></a> -->
+    <a href="/leagues/<%= liga1._id %>/update"><button class="btn btn-secondary m-3">update value</button></a>
+    <a href="/leagues/<%= liga1._id %>/update-table"><button class="btn btn-secondary m-3">update Table</button></a>
+    <% if(liga1.turnament){ %>
+        <a href="/leagues/<%= liga1._id %>/add-TeamsTM"><button class="btn btn-secondary m-3">Add teams from
+                TM</button></a>
+        <% } %>
+            <br>
+            <a href="/leagues/<%= liga1._id %>/edit "><button class="btn btn-warning">Edit</button></a>
+
+            <h1 style="text-align: center;">
+                <%= liga1.name %>
+            </h1>
+            <p style="text-align: center;">
+                <%= liga1.country %>'s <%= liga1.tier %> tier
+            </p>
+            <div class="container-logo"><img class="league-logo" src="<%= liga1.photo %> " alt=""></div>
+            <h3>Value: <%= liga1.valueString %>
+            </h3>
+
+            <div class="row">
+                <div class="container mt-3 mb-5 col-10 offset-1">
+                    <% for(group of groups){ %>
+                        <h5>
+                            <%= group.name %>
+                        </h5>
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="pozitie"><a href="">#</a></th>
+                                    <th scope="col" class="logo"></th>
+                                    <th scope="col" class="nume"></th>
+                                    <th scope="col" class="nume">Value</th>
+                                    <th scope="col" class="played">MJ</th>
+                                    <th scope="col" class="scored">GM</th>
+                                    <th scope="col" class="received">GP</th>
+                                    <th scope="col" class="puncte">Pct</th>
+                            </thead>
+                            <tbody>
+                                <% let k=1%>
+                                    <% for(team of group.teams){ %>
+                                        <% if(team){ %>
+                                            <tr style="max-height: 10px;">
+                                                <th scope="row">
+                                                    <%= k++ %>
+                                                </th>
+                                                <td><a style="margin: auto;" href="/teams/<%= team.id._id %>">
+                                                        <div
+                                                            style="height: 50px; width: 40px; display: flex; align-items: center; justify-content: center;margin:auto;">
+                                                            <img style="height: 90%; width: 90%; margin-top: auto; object-fit: cover;"
+                                                                src="<%= team.id.logo %>" alt="<%= team.id.name %>">
+                                                        </div>
+                                                    </a></td>
+                                                <td class="team-name"><a href="/teams/<%= team.id._id %>">
+                                                        <%= team.id.name %>
+                                                    </a> </td>
+                                                <% if(team.id.value < 1000000){ %>
+                                                    <td>
+                                                        <%= team.id.valueString %>
+                                                    </td>
+                                                    <% }else{ %>
+                                                        <td>
+                                                            <%= `€${team.id.value/1000/1000}bn`%>
+                                                        </td>
+                                                        <% } %>
+                                                            <td>
+                                                                <%=team.tableStats.played%>
+                                                            </td>
+                                                            <td>
+                                                                <%=team.tableStats.scored%>
+                                                            </td>
+                                                            <td>
+                                                                <%=team.tableStats.rec%>
+                                                            </td>
+                                                            <td>
+                                                                <%=team.tableStats.pcts%>
+                                                            </td>
+                                            </tr>
+                                            <% }} %>
+                            </tbody>
+                        </table>
+                        <% } %>
+                </div>
+            </div>

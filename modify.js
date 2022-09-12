@@ -6,7 +6,7 @@ const fs = require('fs')
 
 const { addValuePlayers } = require('./update.js')
 const { League, Match, Player, Team, Turnament } = require('./models/index.js');
-const player = require('./models/player.js');
+const puppeteer = require('puppeteer')
 
 mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
     .then(() => {
@@ -60,3 +60,75 @@ async function switchFlag() {
         }
     })
 }
+
+async function turnament() {
+    const leagues = await League.find({});
+    for (league of leagues) {
+        league.turnament = 0
+        await league.save()
+    }
+}
+
+async function nameFS() {
+    const teams = await Team.find({}).select('nameFS');
+    for (team of teams) {
+        if (team.nameFS)
+            if (team.nameFS[team.nameFS.length - 1] == ')') {
+                team.nameFS = team.nameFS.slice(0, -6)
+                await team.save()
+            }
+    }
+}
+
+async function cas(link) {
+    const browser = await puppeteer.launch()
+    const page = await browser.newPage()
+    await page.setViewport({
+        width: 1345,
+        height: 1001,
+        deviceScaleFactor: 1,
+    });
+    page.goto(link)
+    await page.waitForNavigation()
+    const events = await page.evaluate(() => {
+        const events = { host: [], visit: [], cplm: 0, are: 0 }
+
+        scor = document.querySelector('.detailScore__wrapper').firstChild
+        events.hostScore = scor.innerText; events.visitScore = scor.nextElementSibling.nextElementSibling.innerText
+
+        const eventList = document.querySelectorAll(".smv__participantRow")
+        events.count = eventList.length
+
+        for (eventEl of eventList) {
+            let team, name, type = ''
+
+
+            if (eventEl.classList.contains('smv__awayParticipant')) { team = 'visit' }
+            else { team = 'host'; }
+
+            if (eventEl.querySelector(".substitution")) { name = eventEl.querySelector(".smv__playerName").innerText; type = "sub" }
+            else name = eventEl.querySelector(".smv__playerName div") ? eventEl.querySelector(".smv__playerName div").innerText : ''
+
+            if (eventEl.querySelector(".yellowCard-ico")) type = "yellow"
+            if (eventEl.querySelector(".redCard-ico")) type = "red"
+            if (!type) continue
+
+            events[team].push({
+                time: eventEl.querySelector(".smv__timeBox") ? eventEl.querySelector(".smv__timeBox").innerText : '',
+                name, type
+            })
+        }
+        return events
+
+    })
+    await page.close()
+    await browser.close()
+
+    console.log(events)
+
+}
+
+cas("https://www.flashscore.ro/meci/04xUPC2l/#/sumar-meci/sumar-meci")
+
+
+

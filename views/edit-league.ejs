@@ -1,37 +1,51 @@
-<% layout('layouts/boilerplate.ejs') -%> 
-<style>
+<% layout('layouts/boilerplate.ejs') -%>
+  <style>
 
-</style>
+  </style>
 
-<% console.log(league) %> 
+  <% console.log(league) %>
 
-<form action="/leagues/<%= league._id %>?_method=DELETE" method="post"><button class="btn btn-danger">Delete</button></form>
+    <form action="/leagues/<%= league._id %>?_method=DELETE" method="post"><button
+        class="btn btn-danger">Delete</button></form>
 
-<form action="/leagues/<%= league._id %>?_method=PATCH" method="post">
-    <div class="d-block col-md-6">
-      <label for="name" class="form-label">name</label>
-      <input value="<%=league.name%>" type="text" class="form-control" id="name" name="name">
-    </div>
-    <div class="d-block col-md-6">
-      <label for="first" class="form-label">Country</label>
-      <input value="<%=league.country%>" type="text" class="form-control" id="country" name="country">
-    </div>
-    <div class="d-block col-md-6">
-      <label for="tier" class="form-label">Tier</label>
-      <input value="<%= league.tier %>" type="number" class="form-control" id="tier" name="tier">
-    </div>
-    <div class="d-block col-md-6">
+    <form action="/leagues/<%= league._id %>?_method=PATCH" method="post">
+      <div class="d-block col-md-6">
+        <label for="name" class="form-label">name</label>
+        <input value="<%=league.name%>" type="text" class="form-control" id="name" name="name">
+      </div>
+      <div class="d-block col-md-6">
+        <label for="first" class="form-label">Country</label>
+        <input value="<%=league.country%>" type="text" class="form-control" id="country" name="country">
+      </div>
+      <div class="d-block col-md-6">
+        <p for="tier" class="form-label">Turnament?</p>
+        <!-- <input value="<%= league.turnament %>" type="number" class="form-control" id="turnament" name="turnament"> -->
+        <label> DA <input <%=league.turnament ? 'checked' : '' %> type="radio"
+          value="1" name="turnament"></label>
+        <label> NU <input <%=!league.turnament ? 'checked' : '' %>
+          type="radio" value="0" name="turnament"></label>
+      </div>
+      <div class="d-block col-md-6">
+        <label for="tier" class="form-label">Tier</label>
+        <input value="<%= league.tier %>" type="number" class="form-control" id="tier" name="tier">
+
+      </div>
+      <div class="d-block col-md-6">
         <label for="photo" class="form-label">Photo</label>
         <input value="<%= league.photo %>" type="text" class="form-control" id="photo" name="photo">
-    </div>
-    <div class="container my-3">
+      </div>
+      <div class="container my-3">
         <img src="<%=league.photo%>" alt="">
-    </div>
-    <div class="d-block col-md-6">
+      </div>
+      <div class="d-block col-md-6">
         <label for="url" class="form-label">Url</label>
         <input value="<%= league.url %>" type="url" class="form-control" id="url" name="url">
-    </div>
-    <div class="col-12 my-3">
-      <button type="submit" class="btn btn-success">Edit</button>
-    </div>
-  </form>
+      </div>
+      <div class="d-block col-md-6">
+        <label for="urlFS" class="form-label">urlFS</label>
+        <input value="<%= league.urlFS %>" type="urlFS" class="form-control" id="urlFS" name="urlFS">
+      </div>
+      <div class="col-12 my-3">
+        <button type="submit" class="btn btn-success">Edit</button>
+      </div>
+    </form>

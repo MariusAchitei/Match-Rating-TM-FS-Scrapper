@@ -74,6 +74,15 @@ const playerSchema = new mongoose.Schema({
 
         }
     ]
+}, {
+    virtuals: {
+        valueString: {
+            get() {
+                if (this.value >= 1000000) return `€${(this.value / 1000 / 1000).toFixed(2)}bn.`
+                return this.value >= 1000 ? `€${this.value / 1000}m` : `€${this.value}mii`
+            }
+        }
+    }
 })
 
 module.exports = mongoose.model('Player', playerSchema);

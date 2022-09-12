@@ -55,8 +55,11 @@ router.get('/:teamId', catchAsync(async (req, res) => {
     echipa = await Team.findById(teamId)
         .populate('league')
         .populate({ path: 'squad', options: { sort: sort } })
+    const matches = await Match.find({ $or: [{ visit: echipa._id }, { host: echipa._id }] })
+        .populate('host', 'name logo').populate('visit', 'name logo')
+        .sort([["exactDate.year", 1], ["exactDate.month", 1], ["exactDate.day", 1]]);
 
-    res.render('ShowTeam', { echipa });
+    res.render('ShowTeam', { echipa, matches });
 }))
 
 router.delete('/:id', catchAsync(async (req, res) => {
@@ -68,6 +71,19 @@ router.delete('/:id', catchAsync(async (req, res) => {
         await Player.findByIdAndRemove(player._id)
         console.log('plecat')
     }
+    const league = await League.findById(team.league)
+    // console.log(team._id)
+    // console.log(league.name)
+
+    //league.teams = []
+    if (league) {
+        for (i = 0; i < league.teams.length; i++) {
+            if (league.teams[i] == team._id)
+                league.teams = league.teams.splice(i, 1)
+        }
+        await league.save()
+    }
+
     await Team.findByIdAndRemove(id)
     res.redirect('/Teams')
 }))
@@ -76,9 +92,8 @@ router.get('/:teamId/edit', catchAsync(async (req, res) => {
 
     const { teamId } = req.params;
 
-    const leagues = await League.find({})
+    const leagues = await League.find({}).select('_id name')
     const echipa = await Team.findById(teamId)
-        // .populate('league', 'name')
         .populate('squad')
 
     res.render('editTeam', { echipa, leagues });
@@ -87,15 +102,14 @@ router.get('/:teamId/edit', catchAsync(async (req, res) => {
 router.patch('/:teamId', catchAsync(async (req, res) => {
 
     const { teamId } = req.params;
-    const { name, logo, url, nameTM, aliasName } = req.body
+    const { name, logo, url, nameTM, aliasName, league, nameFS } = req.body
 
     const leagues = await League.find({})
     let echipa = await Team.findById(teamId)
         // .populate('league', 'name')
         .populate('squad')
 
-    // res.render('editTeam', { echipa, leagues });
-    echipa = Object.assign(echipa, { name, logo, url, nameTM, aliasName })
+    echipa = Object.assign(echipa, { name, logo, url, nameTM, aliasName, league, nameFS })
     await echipa.save()
     res.redirect(`/teams/${echipa._id}`)
 }))

@@ -101,7 +101,7 @@ router.get('/newMatch', catchAsync(async (req, res) => {
 
 router.get('/:matchId', catchAsync(async (req, res) => {
     const { matchId } = req.params;
-    const meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id visitSquad.id').populate('hostGoals visitGoals', 'first last')
+    const meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id visitSquad.id').populate('hostGoals visitGoals', 'first last').populate('league', 'name photo')
     res.render('showMatch', { meci })
 }))
 

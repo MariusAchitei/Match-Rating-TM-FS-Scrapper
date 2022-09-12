@@ -276,107 +276,110 @@ async function playerTransfer(player, echipa, num) {
 }
 
 async function addValuePlayers(echipaUrl, echipa, leagueName) {
+    //console.log(echipa)
     if (!echipa.url) {
         echipa.url = echipaUrl
         await echipa.save()
     }
-    let non = 0
-    if (leagueName != 'SuperLiga') non = 1
+    // let non = 0
+    // if (leagueName != 'SuperLiga') non = 1
     let nou = 0
-
+    if (!echipaUrl) return
     axios(echipaUrl)
         .then(async (res) => {
             const html = res.data
             const $ = cheerio.load(html)
             const logo = $('.dataBild img', html).attr('src')
             if (!echipa.logo) echipa.logo = logo;
-            if (non) {
-                let cal = $('.table-highlight', html)
-                echipa.tableStats.pos = $(cal).find('td:nth-of-type(1)').text()
-                echipa.tableStats.played = $(cal).find('td:nth-of-type(4)').text()
-                echipa.tableStats.scored = '-1';
-                echipa.tableStats.rec = '-1';
-                // echipa.tableStats.pcts = $(cal).find('td:nth-of-type(5)').text()
-                echipa.tableStats.pcts = $(cal).find('td:nth-of-type(6)').text()
-            }
+            const divValue = $('.dataMarktwert a', html)
+            echipa.value = convertValueToNum(divValue.first().text() + divValue.text() + divValue.first().next().text())
+
             // $('.responsive-table .items>tbody>tr', html).each(async function () {
             for (let elem of $('.responsive-table .items>tbody>tr', html)) {
-                const num = parseInt($(elem).find('.rn_nummer').text());
-                const nume = $(elem).find('td tbody .hide-for-small a').text().toUpperCase().trim().split(' ');
+                try {
+                    const num = parseInt($(elem).find('.rn_nummer').text());
+                    const nume = $(elem).find('td tbody .hide-for-small a').text().toUpperCase().trim().split(' ');
 
-                let photo = $(elem).find('.inline-table tbody tr td:nth-of-type(1) a img').attr('data-src').trim().split('/');
-                photo[4] = 'header'
-                photo = photo.join('/')
-                if (!photo) photo = "https://lpf.ro/images/jucatori/silueta.png"
+                    let photo = $(elem).find('.inline-table tbody tr td:nth-of-type(1) a img').attr('data-src').trim().split('/');
+                    photo[4] = 'header'
+                    photo = photo.join('/')
+                    if (!photo) photo = "https://lpf.ro/images/jucatori/silueta.png"
 
-                let data = $(elem).find('td:nth-of-type(4)').text().replaceAll(',', '').replaceAll('(', '').replaceAll(')', '').split(' ')
-                const born = {
-                    month: data[0],
-                    day: parseInt(data[1]),
-                    year: parseInt(data[2]),
-                    age: parseInt(data[3])
-                }
-                let jucator
-                if (num) {
-                    jucator = await Player.findOne({ last: { $in: nume }, num, team: echipa })
-                    if (!jucator) { jucator = await Player.findOne({ num, team: echipa }) }
-                }
-                else
-                    jucator = await Player.findOne({ last: { $in: nume }, team: echipa })
-
-                //Daca nu am gasit jucatorul facem transfer
-
-                if (!jucator) {
-                    jucator = await Player.findOne({ last: { $in: nume }, 'born.month': born.month, 'born.year': born.year, 'born.age': born.age })
-                    if (jucator) {
-                        await playerTransfer(jucator, echipa, num)
+                    let data = $(elem).find('td:nth-of-type(4)').text().replaceAll(',', '').replaceAll('(', '').replaceAll(')', '').split(' ')
+                    const born = {
+                        month: data[0],
+                        day: parseInt(data[1]) !== NaN ? parseInt(data[1]) : 0,
+                        year: parseInt(data[2]) !== NaN ? parseInt(data[2]) : 0,
+                        age: parseInt(data[3]) !== NaN ? parseInt(data[3]) : 0
                     }
-                    else {
-                        jucator = new Player({
-                            last: nume[1] ? nume[1] : nume[0],
-                            first: nume[1] ? nume[0] : '',
-                            num: num ? num : 0,
-                            team: echipa,
-                            photo
-                        })
-                        echipa.squad.push(jucator)
+                    let jucator
+                    if (num) {
+                        jucator = await Player.findOne({ last: { $in: nume }, num, team: echipa })
+                        if (!jucator) { jucator = await Player.findOne({ num, team: echipa }) }
                     }
-                }
+                    else
+                        jucator = await Player.findOne({ last: { $in: nume }, team: echipa })
 
-                jucator.born = {
-                    month: data[0],
-                    day: parseInt(data[1]),
-                    year: parseInt(data[2]),
-                    age: parseInt(data[3])
-                }
+                    //Daca nu am gasit jucatorul facem transfer
 
-                if (!jucator.nat.length) {
-                    let nat = $(elem).find('td:nth-of-type(5) img').first()
-                    if (nat.attr('title')) {
-                        jucator.nat.push({
-                            country: nat.attr('title'),
-                            img: nat.attr('src')
-                        })
+                    if (!jucator) {
+                        jucator = await Player.findOne({ last: { $in: nume }, 'born.month': born.month, 'born.year': born.year, 'born.age': born.age })
+                        if (jucator) {
+                            await playerTransfer(jucator, echipa, num)
+                        }
+                        else {
+                            jucator = new Player({
+                                last: nume[1] ? nume[1] : nume[0],
+                                first: nume[1] ? nume[0] : '',
+                                num: num ? num : 0,
+                                team: echipa,
+                                photo
+                            })
+                            echipa.squad.push(jucator)
+                        }
                     }
-                    if (nat.next().next().attr('title')) {
-                        jucator.nat.push({
-                            country: nat.next().next().attr('title'),
-                            img: nat.next().next().attr('src')
-                        })
+
+                    jucator.born = {
+                        month: born.month,
+                        day: born.day,
+                        year: born.year,
+                        age: born.age
                     }
-                }
 
-                if (!jucator.position) {
-                    const position = $(elem).find('.inline-table tbody tr:nth-of-type(2) td').text()
-                    jucator.position = position
-                }
+                    if (!jucator.nat.length) {
+                        let nat = $(elem).find('td:nth-of-type(5) img').first()
+                        if (nat.attr('title')) {
+                            const arr = nat.attr('src').split('/')
+                            arr[5] = 'medium'
+                            const img = arr.join('/')
+                            jucator.nat.push({
+                                country: nat.attr('title'),
+                                img
+                            })
+                        }
+                        if (nat.next().next().attr('title')) {
+                            const arr = nat.next().next().attr('src').split('/')
+                            arr[5] = 'medium'
+                            const img = arr.join('/')
+                            jucator.nat.push({
+                                country: nat.next().next().attr('title'),
+                                img
+                            })
+                        }
+                    }
+
+                    if (!jucator.position) {
+                        const position = $(elem).find('.inline-table tbody tr:nth-of-type(2) td').text()
+                        jucator.position = position
+                    }
 
 
-                let value = $(elem).find('td:nth-of-type(6)').text().trim()
-                jucator.value = convertValueToNum(value)
+                    let value = $(elem).find('td:nth-of-type(6)').text().trim()
+                    jucator.value = convertValueToNum(value)
 
 
-                await jucator.save()
+                    await jucator.save()
+                } catch (err) { console.log(err); continue }
             }
             await echipa.save()
         }).catch(err => console.log(err));
@@ -385,7 +388,8 @@ async function addValuePlayers(echipaUrl, echipa, leagueName) {
 
 
 async function updateValues(leagueFind, leagueUrl) {
-    let league = await League.findOne({ name: leagueFind.name }).select('name value _id teams')
+    //console.log(leagueFind, leagueUrl)
+    let league = await League.findOne({ name: leagueFind.name }).select('name value _id teams url')
 
     if (!league) {
         league = new League({
@@ -394,11 +398,13 @@ async function updateValues(leagueFind, leagueUrl) {
         })
         await league.save()
     }
+    else { console.log(league, '\n', leagueFind.url.trim()) }
 
 
     let leagueValue = 0
-    axios(leagueFind.url)
+    axios(league.url)
         .then(async (res) => {
+            console.log(league.url)
             const html = res.data
             const $ = cheerio.load(html)
 
@@ -410,7 +416,7 @@ async function updateValues(leagueFind, leagueUrl) {
 
                 let echipaNume = $(elem).find('.hauptlink a').text().toUpperCase().trim()
                 arr = echipaNume.split(' ');
-                const echipaUrl = 'https://www.transfermarkt.com' + $(elem).find('.hauptlink a').attr('href')
+                const echipaUrl = $(elem).find('.hauptlink a').attr('href')
 
                 // Cautam echipa in baza de date in functie de numele de pe TM si liga trimisa ca paramentru
 
@@ -420,7 +426,13 @@ async function updateValues(leagueFind, leagueUrl) {
                 //DE FACUT adaugarea echipei in acest caz
 
                 if (!echipa) {
+                    //console.log('cal')
+                    if (!echipaNume) continue
                     echipa = new Team({ nameTM: echipaNume, name: echipaNume, league });
+                    league.teams.push(echipa._id)
+                    await echipa.save()
+                }
+                if (!league.teams.includes(echipa._id)) {
                     league.teams.push(echipa._id)
                 }
 
@@ -432,10 +444,12 @@ async function updateValues(leagueFind, leagueUrl) {
                 leagueValue += convertValueToNum(value);
 
                 //await echipa.save()
-                await addValuePlayers(echipaUrl, echipa, league.name)
+                if (echipaUrl)
+                    await addValuePlayers('https://www.transfermarkt.com' + echipaUrl, echipa, league.name)
             }
             if (leagueValue)
                 league.value = leagueValue;
+            // console.log(league.teams)
             await league.save()
         }).catch(err => console.log(err));
 

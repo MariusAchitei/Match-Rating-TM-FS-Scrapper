@@ -21,6 +21,8 @@
     "fs": "^0.0.1-security",
     "joi": "^17.6.0",
     "method-override": "^3.0.0",
-    "mongoose": "^6.5.0"
+    "mongoose": "^6.5.0",
+    "puppeteer": "^16.2.0",
+    "puppeteer-cluster": "^0.23.0"
   }
 }
