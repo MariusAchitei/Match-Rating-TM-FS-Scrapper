@@ -267,8 +267,9 @@ async function addMatches(league) {
 // }
 
 function convertValueToNum(value) {
-    if (value[value.length - 1] === '.') {
-        value = parseInt(value.slice(1, value.length - 2))
+    if (value[value.length - 1] === 'k') {
+        // console.log(value.slice(1, value.length - 1));
+        value = parseInt(value.slice(1, value.length - 1))
         return value;
     }
     if (value[value.length - 1] === 'm') {
@@ -292,6 +293,40 @@ async function playerTransfer(player, echipa, num) {
 
 }
 
+function scrapePlayer(player, $, html) {
+    $ = cheerio.load(html)
+    let data = $(player).find('td:nth-of-type(4)').text().replaceAll(',', '').replaceAll('(', '').replaceAll(')', '').split(' ');
+    // let scrapeData = {
+    //     numar: parseInt($(player).find('.tm-shirt-number').text()),
+    //     nume: $(player).find('td tbody .hide-for-small a').text().toUpperCase().trim().split(' '),
+    //     photo: $(player).find('.inline-table tbody tr td:nth-of-type(1) a img').attr('data-src').trim().split('/'),
+    //     born: {
+    //         month: data[0],
+    //         day: parseInt(data[1]) !== NaN ? parseInt(data[1]) : 0,
+    //         year: parseInt(data[2]) !== NaN ? parseInt(data[2]) : 0,
+    //         age: parseInt(data[3]) !== NaN ? parseInt(data[3]) : 0
+    //     }
+    // }
+    // let scrapeData = {
+    let numar = parseInt($(player).find('.tm-shirt-number').text());
+    let nume = $(player).find('td tbody .hide-for-small a').text().toUpperCase().trim().split(' ');
+    let photo = $(player).find('.inline-table tbody tr td:nth-of-type(1) a img').attr('data-src').trim().split('/');
+    let born = {
+        month: data[0],
+        day: parseInt(data[1]) !== NaN ? parseInt(data[1]) : 0,
+        year: parseInt(data[2]) !== NaN ? parseInt(data[2]) : 0,
+        age: parseInt(data[3]) !== NaN ? parseInt(data[3]) : 0
+    }
+    // }
+
+    photo[4] = 'header'
+    photo = photo.join('/')
+    if (!photo) photo = "https://lpf.ro/images/jucatori/silueta.png";
+
+    // console.log(numar, nume, photo, born)
+    return [numar, nume, photo, born];
+}
+
 async function addValuePlayers(echipaUrl, echipa, leagueName) {
     //console.log(echipa)
     if (!echipa.url) {
@@ -308,29 +343,15 @@ async function addValuePlayers(echipaUrl, echipa, leagueName) {
             const $ = cheerio.load(html)
             const logo = $('.dataBild img', html).attr('src')
             if (!echipa.logo) echipa.logo = logo;
-            const divValue = $('.dataMarktwert a', html)
-            // echipa.value = convertValueToNum(divValue.first().text() + divValue.text() + divValue.first().next().text())
 
-            // $('.responsive-table .items>tbody>tr', html).each(async function () {
-            for (let elem of $('.responsive-table .items>tbody>tr', html)) {
+            for (let playerRow of $('.responsive-table .items>tbody>tr', html)) {
                 try {
-                    const num = parseInt($(elem).find('.rn_nummer').text());
-                    const nume = $(elem).find('td tbody .hide-for-small a').text().toUpperCase().trim().split(' ');
+                    let [numar, nume, photo, born] = scrapePlayer(playerRow, $, html);
 
-                    let photo = $(elem).find('.inline-table tbody tr td:nth-of-type(1) a img').attr('data-src').trim().split('/');
-                    photo[4] = 'header'
-                    photo = photo.join('/')
-                    if (!photo) photo = "https://lpf.ro/images/jucatori/silueta.png"
+                    // continue;
 
-                    let data = $(elem).find('td:nth-of-type(4)').text().replaceAll(',', '').replaceAll('(', '').replaceAll(')', '').split(' ')
-                    const born = {
-                        month: data[0],
-                        day: parseInt(data[1]) !== NaN ? parseInt(data[1]) : 0,
-                        year: parseInt(data[2]) !== NaN ? parseInt(data[2]) : 0,
-                        age: parseInt(data[3]) !== NaN ? parseInt(data[3]) : 0
-                    }
                     let jucator
-                    if (num) jucator = await Player.findOne({ last: { $in: nume }, num, team: echipa });
+                    if (numar) jucator = await Player.findOne({ last: { $in: nume }, num: numar, team: echipa });
                     else jucator = await Player.findOne({ last: { $in: nume }, team: echipa })
 
 
@@ -341,29 +362,25 @@ async function addValuePlayers(echipaUrl, echipa, leagueName) {
                         jucator = await Player.findOne({ last: { $in: nume }, 'born.month': born.month, 'born.year': born.year, 'born.age': born.age })
                         if (jucator) {
                             console.log(`L am transferat pe ${nume} la ${echipa.name}`)
-                            await playerTransfer(jucator, echipa, num)
+                            await playerTransfer(jucator, echipa, numar)
                         }
                         else {
+                            console.log("creez noul jucator" + nume);
                             jucator = new Player({
                                 last: nume[1] ? nume[1] : nume[0],
                                 first: nume[1] ? nume[0] : '',
-                                num: num ? num : 0,
+                                num: numar ? numar : 0,
                                 team: echipa,
-                                photo
+                                photo: photo
                             })
                             echipa.squad.push(jucator)
                         }
                     }
 
-                    jucator.born = {
-                        month: born.month,
-                        day: born.day,
-                        year: born.year,
-                        age: born.age
-                    }
+                    jucator.born = born;
 
                     if (!jucator.nat.length) {
-                        let nat = $(elem).find('td:nth-of-type(5) img').first()
+                        let nat = $(playerRow).find('td:nth-of-type(5) img').first()
                         if (nat.attr('title')) {
                             const arr = nat.attr('src').split('/')
                             arr[5] = 'medium'
@@ -385,13 +402,14 @@ async function addValuePlayers(echipaUrl, echipa, leagueName) {
                     }
 
                     if (!jucator.position) {
-                        const position = $(elem).find('.inline-table tbody tr:nth-of-type(2) td').text()
+                        const position = $(playerRow).find('.inline-table tbody tr:nth-of-type(2) td').text()
                         jucator.position = position
                     }
 
 
-                    let value = $(elem).find('td:nth-of-type(6)').text().trim()
+                    let value = $(playerRow).find('.rechts a').text().trim()
                     jucator.value = convertValueToNum(value)
+                    console.log("nume: " + nume + " valoare: " + value + "   " + convertValueToNum(value));
 
 
                     await jucator.save()
@@ -475,7 +493,7 @@ async function updateValues(leagueFind, leagueUrl) {
             // console.log(league.teams)
             await league.save()
         }).catch(err => console.log(err));
-
+    console.log("AM TERMINAT");
 }
 
 //addValuePlayers('https://www.transfermarkt.com/dac-dunajska-streda/startseite/verein/4529')
