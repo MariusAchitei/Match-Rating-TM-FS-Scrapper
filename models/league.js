@@ -64,6 +64,12 @@ const leagueSchema = new mongoose.Schema({
                 if (this.value >= 1000000) return `€${(this.value / 1000 / 1000).toFixed(2)}bn.`
                 return this.value >= 1000 ? `€${this.value / 1000}m` : `€${this.value}mii`
             }
+        },
+        updateValue: {
+            set(value) {
+                if (typeof (value) == 'number')
+                    this.set({ value })
+            }
         }
     }
 })

@@ -79,27 +79,21 @@
                                             <td class="team-name"><a href="/teams/<%= team._id %>">
                                                     <%= team.name %>
                                                 </a> </td>
-                                            <% if(team.value < 1000000){ %>
-                                                <td>
-                                                    <%= team.valueString %>
-                                                </td>
-                                                <% }else{ %>
-                                                    <td>
-                                                        <%= `€${team.value/1000/1000}bn`%>
-                                                    </td>
-                                                    <% } %>
-                                                        <td>
-                                                            <%=team.tableStats.played%>
-                                                        </td>
-                                                        <td>
-                                                            <%=team.tableStats.scored%>
-                                                        </td>
-                                                        <td>
-                                                            <%=team.tableStats.rec%>
-                                                        </td>
-                                                        <td>
-                                                            <%=team.tableStats.pcts%>
-                                                        </td>
+                                            <td>
+                                                <%= team.valueString %>
+                                            </td>
+                                            <td>
+                                                <%=team.tableStats.played%>
+                                            </td>
+                                            <td>
+                                                <%=team.tableStats.scored%>
+                                            </td>
+                                            <td>
+                                                <%=team.tableStats.rec%>
+                                            </td>
+                                            <td>
+                                                <%=team.tableStats.pcts%>
+                                            </td>
                                         </tr>
                                         <% }} %>
                         </tbody>

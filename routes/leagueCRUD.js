@@ -10,7 +10,7 @@ const { updateTable, addMatches, updateValues } = require('../update')
 const { AppError } = require('../utils/appError.js')
 const catchAsync = require('../utils/catchAsync')
 const { matchSchema, ratingSchema } = require('../schemas')
-const { cautMeci, UpdateTableFS, UpdateTurnamentFS } = require('../flashscore.js')
+const { cautMeci, UpdateTableFS, UpdateTurnamentFS, calculateValue } = require('../flashscore.js')
 const { createTurnament } = require('../conference.js');
 const { group } = require('console');
 
@@ -136,10 +136,11 @@ router.delete('/:id', catchAsync(async (req, res) => {
 
 router.get('/:id/update', catchAsync(async (req, res) => {
     const { id } = req.params;
-    const league = await League.findById(id)
+    const league = await League.findById(id).select('name url')
     //console.log(league, '\n---------------------')
 
     await updateValues({ name: league.name, url: league.url })
+    await calculateValue(league._id)
 
     res.redirect(`/leagues/${id}`)
 

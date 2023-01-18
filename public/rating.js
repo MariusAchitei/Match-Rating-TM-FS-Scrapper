@@ -106,15 +106,12 @@ function submitListen(event) {
       p.style.color = 'black';
       const team = document.querySelector('.team').value;
       let procent;
+      console.log(res.data)
 
-      if (team == 'host') {
-        procent = ((res.data.hostPotm.curent * 100) / res.data.hostPotm.total).toFixed(2);
-        p.innerText = res.data.hostPotm.id.first + '  ' + res.data.hostPotm.id.last + '  ' + procent
-      }
-      else {
-        procent = ((res.data.visitPotm.curent * 100) / res.data.visitPotm.total).toFixed(2);
-        p.innerText = res.data.visitPotm.id.first + '  ' + res.data.visitPotm.id.last + '  ' + procent
-      }
+      const type = team == 'host' ? 'hostPotm' : 'visitPotm'
+
+      procent = ((res.data[type].curent * 100) / res.data[type].total).toFixed(2);
+      p.innerText = res.data[type].id.first + '  ' + res.data[type].id.last + '  ' + procent
 
 
       main.appendChild(p);
@@ -124,15 +121,15 @@ function submitListen(event) {
       console.log(scores);
 
       let i = 0
-      scores.forEach(score => {
-        if (team == 'host') {
-          score.innerText = (res.data.hostSquad[i].nota / res.data.hostSquad[i].voturi).toFixed(2);
-        }
-        else {
-          score.innerText = (res.data.visitSquad[i].nota / res.data.visitSquad[i].voturi).toFixed(2);
-        }
+
+      for (score of scores) {
+        const type = team == 'host' ? 'hostSquad' : 'visitSquad'
+
+        while (!(res.data[type][i].status)) i++
+        score.innerText = (res.data[type][i].nota / res.data[type][i].voturi).toFixed(2);
+
         i++;
-      });
+      };
       //console.log(names.innerText)
       const alert = document.querySelector('.alert-success')
       alert.classList.remove('inactive')

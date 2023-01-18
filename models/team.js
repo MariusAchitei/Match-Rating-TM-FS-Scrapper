@@ -49,6 +49,10 @@ const teamSchema = new mongoose.Schema({
         }
 
     },
+    international: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Group'
+    },
     results: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -72,10 +76,17 @@ const teamSchema = new mongoose.Schema({
         valueString: {
             get() {
                 if (this.value >= 1000000) return `€${(this.value / 1000 / 1000).toFixed(2)}bn.`
-                return this.value >= 1000 ? `€${this.value / 1000}m` : `€${this.value}mii`
+                return this.value >= 1000 ? `€${(this.value / 1000).toFixed(2)}m` : `€${this.value}mii`
             }
-        }
+        },
+        // updateValue: {
+        //     set(function(value) {
+        //         if (typeof (value) == 'number')
+        //             this.set({ value })
+        //     })
+        // }
     }
+
 })
 
 module.exports = mongoose.model('Team', teamSchema);

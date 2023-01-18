@@ -1,116 +1,96 @@
 
 <% layout('layouts/boilerplate.ejs') -%> 
 
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous"> -->
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous"> -->
 
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/rating.css">
-    <a href="/matches/<%= meci._id %> "><button class="btn btn-secondary m-3">Back</button></a>
-    <main>
-      <h1><%= meci.host.name %>vs <%= meci.visit.name %>  </h1>
+<link rel="stylesheet" href="/styles.css" />
+<link rel="stylesheet" href="/rating.css">
+<a href="/matches/<%= meci._id %> "><button class="btn btn-secondary m-3">Back</button></a>
+<main>
+  <h1><%= meci.host.name %>vs <%= meci.visit.name %>  </h1>
 
-      <!-- forumular de identificare -->
+  <!-- forumular de identificare -->
 
-      <form id="ratingHost" class="validated-form" novalidate action="<%= meci._id %>" method="POST">
-        <input style="width: 0; height: 0;" type="radio" name="meciId" value="<%= meci._id %>">
-        <input style="width: 0; height: 0;" class="team" type="radio" name="team" value="<%= team %>">
-      </form>
+  <form id="ratingHost" class="validated-form" novalidate action="<%= meci._id %>" method="POST">
+    <input style="width: 0; height: 0;" type="radio" name="meciId" value="<%= meci._id %>">
+    <input style="width: 0; height: 0;" class="team" type="radio" name="team" value="<%= team %>">
+  </form>
 
-      <!-- alarma omul meciului -->
+  <!-- alarma omul meciului -->
 
-      <div class="alert alert-warning alert-dismissible inactive">
-        <!-- <button type="button" class="btn-close" data-bs-dismiss="alert"></button> -->
-        <strong>Nu ati ales jucatorul meciului!</strong> (steluta)
-      </div>
+  <div class="alert alert-warning alert-dismissible inactive">
+    <!-- <button type="button" class="btn-close" data-bs-dismiss="alert"></button> -->
+    <strong>Nu ati ales jucatorul meciului!</strong> (steluta)
+  </div>
 
-      <div class="alert alert-success alert-dismissible inactive" s>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        Votul a fost inregistrat cu succes
-      </div>
+  <div class="alert alert-success alert-dismissible inactive" s>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    Votul a fost inregistrat cu succes
+  </div>
 
-      <section class="rating-section">
-        <% let jucatori %> 
-        <% if(team == 'host'){ jucatori = meci.hostSquad %>
-        <% } else { jucatori = meci.visitSquad }%>
-          <h5 style="color: black">(<%= jucatori.length %>) </h5>
-        <% for(let jucator of jucatori){ %>  
-        <% jucator = jucator.id %>  
-        <%if(jucator.position === "Portar" ) { %>
-          <div class="profil jucator portar">
-        <% } else if(jucator.pozitie === "AN") { %>
-            <div class="profil jucator antrenor">
-              <% } else { %>
-                <div class="profil jucator">
-                <% } %> 
-        <!-- <div class="profil jucator"> -->
-          <div class="profil-imagine">
-            <div class="poza">
-              <div class="pozitie">
-                  <%
-                  let position; 
-                  switch (jucator.position) {
-                      case 'Fundaș':{
-                          position = 'Def'
-                          break;
-                      }
-                      case 'Mijlocaș':{
-                          position = 'Mid'
-                          break;
-                      }
-                      case 'Atacant':{
-                          position = 'Att'
-                          break;
-                      }
-
-                      default:
-                          position = '-';
-                  } %> 
-                <span><%= position %></span>
-              </div>
-              <img src= "<%= jucator.photo %>" />
-            </div>
+  <section class="rating-section">
+    <% let jucatori %> 
+    <% if(team == 'host'){ jucatori = meci.hostSquad %>
+    <% } else { jucatori = meci.visitSquad }%>
+      <h5 style="color: black">(<%= jucatori.length %>) </h5>
+    <% for(let jucator of jucatori){ %>  
+      <% if(!jucator.status) continue %>  
+    <%if(jucator.id.position === "Portar" ) { %>
+      <div class="profil jucator portar">
+    <% } else if(jucator.id.pozitie === "AN") { %>
+        <div class="profil jucator antrenor">
+          <% } else { %>
+            <div class="profil jucator">
+            <% } %> 
+    <!-- <div class="profil jucator"> -->
+      <div class="profil-imagine">
+        <div class="poza">
+          <div class="pozitie"> 
+            <span><%= jucator.status %></span>
           </div>
-          <div class="detalii">
-            <div class="info-top">
-              <span class="lastName"><%= jucator.last%></span>
-              <span class="firstName"><%= jucator.first%></span>
-            </div>
-            <!-- <div class="info-note"> -->
-            <form action="">
-              <label>1<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="1" required/></label>
-              <label>2<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="2"/></label>
-              <label>3<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="3"/></label>
-              <label>4<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="4"/></label>
-              <label>5<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="5"/></label>
-              <label>6<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="6"/></label>
-              <label>7<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="7"/></label>
-              <label>8<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="8"/></label>
-              <label>9<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="9"/></label>
-              <label>10<input form="ratingHost" type="radio" name="<%=jucator._id%>" value="10" /></label>
-            </form>
-            <!-- </div> -->
-            <div class="info-bottom">
-              <div class="bottom_motm">
-                <label
-                  ><img src="/jucatori/star_potm.png" alt="potm" /><input
-                    type="radio"
-                    name="potm"
-                    form="ratingHost"
-                    class="playerId"
-                    value="<%= jucator._id %>"
-                    required
-                /></label>
-              </div>
-              <div class="voturi"><span>Nota de astazi</span></div>
-              <div class="scor">??</div>
-            </div>
-          </div>
+          <img src= "<%= jucator.id.photo %>" />
         </div>
-        <% }%>
-        <button id="submitHost" class="btn btn-success mb-3" form="ratingHost">Submit</button>
-      </section>
+      </div>
+      <div class="detalii">
+        <div class="info-top">
+          <span class="lastName"><%= jucator.id.last%></span>
+          <span class="firstName"><%= jucator.id.first%></span>
+        </div>
+        <!-- <div class="info-note"> -->
+        <form action="">
+          <label>1<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="1" required/></label>
+          <label>2<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="2"/></label>
+          <label>3<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="3"/></label>
+          <label>4<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="4"/></label>
+          <label>5<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="5"/></label>
+          <label>6<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="6"/></label>
+          <label>7<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="7"/></label>
+          <label>8<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="8"/></label>
+          <label>9<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="9"/></label>
+          <label>10<input form="ratingHost" type="radio" name="<%=jucator.id._id%>" value="10" /></label>
+        </form>
+        <!-- </div> -->
+        <div class="info-bottom">
+          <div class="bottom_motm">
+            <label
+              ><img src="/jucatori/star_potm.png" alt="potm" /><input
+                type="radio"
+                name="potm"
+                form="ratingHost"
+                class="playerId"
+                value="<%= jucator.id._id %>"
+                required
+            /></label>
+          </div>
+          <div class="voturi"><span>Nota de astazi</span></div>
+          <div class="scor">??</div>
+        </div>
+      </div>
+    </div>
+    <% }%>
+    <button id="submitHost" class="btn btn-success mb-3" form="ratingHost">Submit</button>
+  </section>
 
-    </main>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="/rating.js"></script>
-
+</main>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/rating.js"></script>

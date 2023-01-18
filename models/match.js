@@ -43,6 +43,7 @@ matchSchema = new mongoose.Schema({
         type: String,
         default: '0'
     },
+    events: [],
     host: {
         type: Schema.Types.ObjectId,
         ref: 'Team'
@@ -55,6 +56,10 @@ matchSchema = new mongoose.Schema({
                 ref: 'Player'
             },
             capitan: {
+                type: Number,
+                default: 0
+            },
+            card: {
                 type: Number,
                 default: 0
             },
@@ -131,31 +136,32 @@ matchSchema = new mongoose.Schema({
     },
     goals: {
         host: [
-            {
-                player:
-                {
-                    type: Schema.Types.ObjectId,
-                    ref: 'Player'
-                },
-                minute: {
-                    type: Number,
-                    min: 0
-                }
-            }
+            // {
+            //     player:
+            //     {
+            //         type: String,
+            //         type: Schema.Types.ObjectId,
+            //         ref: 'Player'
+            //     },
+            //     minute: {
+            //         type: Number,
+            //         min: 0
+            //     }
+            // }
         ],
         visit: [
-            {
-                player: {
+            // {
+            //     player: {
 
-                    type: Schema.Types.ObjectId,
-                    ref: 'Player'
+            //         type: Schema.Types.ObjectId,
+            //         ref: 'Player'
 
-                },
-                minute: {
-                    type: Number,
-                    min: 0
-                }
-            }
+            //     },
+            //     minute: {
+            //         type: Number,
+            //         min: 0
+            //     }
+            // }
         ],
     },
     visitScore: {
@@ -227,6 +233,7 @@ matchSchema = new mongoose.Schema({
             }
         }
     }
+
 })
 
 module.exports = mongoose.model('Match', matchSchema);

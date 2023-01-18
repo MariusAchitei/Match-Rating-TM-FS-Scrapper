@@ -1,0 +1,38 @@
+<% if(meci.events.length){ %>
+    <section id="conference-timeline">
+      <div class="timeline-start">Start</div>
+      <div class="conference-center-line"></div>
+      <div class="conference-timeline-content">
+        <!-- Article -->
+        <% for(event of meci.events){ %>
+
+          <div class="timeline-article">
+            <% if(event.team=='host' ){ %>
+              <div class="content-left-container">
+                <% }else{ %>
+                  <div class="content-right-container">
+                    <% } %>
+                      <div class="content-left">
+                        <% let src %> 
+                        <% switch (event.type){
+                          case 'sub': {src = "/utils/substitution.png"; break;}
+                          case 'yellow' : {src = "/utils/yellow.png"; break;}
+                          case 'red' : {src = "/utils/red.png"; break;}
+                          case 'goal' : {src = "/utils/goal.png"}
+                        } %> 
+                        <img src= <%= src %> alt="">
+                        <p><%=event.name%></p>
+                      </div>
+                      <!-- <span class="timeline-author">John Doe</span> -->
+                  </div>
+                  <div class="meta-date">
+                    <span class="date"><%=event.time%></span>
+                    <!-- <span class="month">APR</span> -->
+                  </div>
+              </div>
+              <% } %>
+
+          </div>
+          <div class="timeline-end">End</div>
+    </section>
+    <% } %>

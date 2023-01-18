@@ -101,7 +101,10 @@ router.get('/newMatch', catchAsync(async (req, res) => {
 
 router.get('/:matchId', catchAsync(async (req, res) => {
     const { matchId } = req.params;
-    const meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id visitSquad.id').populate('hostGoals visitGoals', 'first last').populate('league', 'name photo')
+    const meci = await Match.findById(matchId)
+        .populate('host visit', 'name logo value').populate('hostSquad.id visitSquad.id').populate('league', 'name photo')
+    // .populate('hostGoals visitGoals', 'first last')
+
     res.render('showMatch', { meci })
 }))
 
@@ -116,10 +119,12 @@ router.get('/:matchId/:team', catchAsync(async (req, res) => {
     let meci;
 
     if (team == 'host') {
-        meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id').populate('hostGoals visitGoals', 'first last')
+        meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('hostSquad.id')
+        // .populate('hostGoals visitGoals', 'first last')
     }
     else {
-        meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('visitSquad.id').populate('visitGoals hostGoals', 'first last')
+        meci = await Match.findById(matchId).populate('host visit', 'name logo').populate('visitSquad.id')
+        // .populate('visitGoals hostGoals', 'first last')
     }
     res.render('showRatings', { meci, team })
 }))
@@ -132,25 +137,21 @@ router.post('/:matchId', validateRating, catchAsync(async (req, res) => {
     const meci = await Match.findById(meciId)
 
     //adauga vot omul meciului
-    let i = 0;
     let findPotm = {
         id: '',
         voturi: 0,
     }
-    let total = 0;
 
-    let players
+    let players, total = 0, i = 0;;
 
-    if (team == 'host') {
-        players = meci.hostSquad;
-        console.log('salut')
-    }
-    else {
-        players = meci.visitSquad;
-        console.log('pa')
-    }
+    if (team == 'host') players = meci.hostSquad;
+    else players = meci.visitSquad;
+
+    //console.log('woow',players)
 
     for (let player of players) {
+        if (!player.status) continue
+
         if (note[i].id == player.id) {
             player.nota += parseInt(note[i].score);
             player.voturi++;
@@ -160,22 +161,23 @@ router.post('/:matchId', validateRating, catchAsync(async (req, res) => {
             player.potm.voturi++;
             total++;
         }
+        // console.log(note[i].id, player.id, '    ', note[i].id == player.id )
+        // console.log(player.nota, player.voturi, player.potm.voturi )
         if (player.potm.voturi > findPotm.voturi) {
             findPotm.id = player.id;
             findPotm.voturi = player.potm.voturi;
         }
 
     }
-    if (team == 'host') {
-        meci.hostPotm.id = await Player.findById(findPotm.id);
-        meci.hostPotm.curent = findPotm.voturi;
-        meci.hostPotm.total += total
-    }
-    else {
-        meci.visitPotm.id = await Player.findById(findPotm.id);
-        meci.visitPotm.curent = findPotm.voturi;
-        meci.visitPotm.total += total
-    }
+    let potmTeam
+
+    if (team == 'host') potmTeam = 'hostPotm'
+    else potmTeam = 'visitPotm'
+
+    meci[potmTeam].id = await Player.findById(findPotm.id);
+    meci[potmTeam].curent = findPotm.voturi;
+    meci[potmTeam].total += total
+
     await meci.save()
 
     res.json(meci)

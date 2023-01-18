@@ -1,7 +1,11 @@
 <% layout('layouts/boilerplate.ejs') -%>
+  <link rel="stylesheet" href="/timeline.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
   <link rel="stylesheet" href="/styles.css" />
+
   <style>
     .list,
     h5 {
@@ -17,32 +21,27 @@
       /* max-height: 90vh; */
       max-width: 700px;
     }
+
+    .sub-off {
+      color: gray;
+      font-size: small;
+    }
   </style>
 
   <form action="/matches/<%= meci._id %>?_method=DELETE" method="post"><button class="btn btn-danger">Delete</button>
   </form>
-
-  <h2><a href="/matches/<%= meci._id %>/host">
-      <%= meci.host.name %>
-    </a> vs <a href="/matches/<%= meci._id %>/visit">
-      <%= meci.visit.name %>
-    </a> </h2>
-
-  <p>Status: <%= meci.status %>
-  </p>
-  <% if(meci.date) %>
-    <p>
-      <%= meci.date %>
-    </p>
-    <% if(meci.etapa) %>
-      <p>
-        <%= meci.etapa %>
-      </p>
+  <% if(meci.status){ %>
+    <h2><a href="/matches/<%= meci._id %>/host">
+        <%= meci.host.name %>
+      </a> vs <a href="/matches/<%= meci._id %>/visit">
+        <%= meci.visit.name %>
+      </a> </h2>
+    <% } %>
       <main>
         <div class="tabela">
           <div class="competitie">
             <h2>
-              <%= meci.league.name %>
+              <%= meci.league.name %> <span>(<%= meci.etapa.toLowerCase() %>)</span>
             </h2>
           </div>
           <div class="status1">
@@ -91,33 +90,83 @@
             </section>
           </div>
           <div class="status-ht">
-            <div>
-              <span>#</span>
+            <div <%=meci.host.value>meci.visit.value ? `class=value` : '' %>>
+              <span>
+                <%=meci.host.valueString%>
+              </span>
             </div>
-            <p>HT</p>
-            <div>
-              <span>#</span>
+            <p>Value</p>
+            <div <%=meci.host.value<meci.visit.value ? `class=value` : '' %>>
+              <span>
+                <%=meci.visit.valueString%>
+              </span>
             </div>
           </div>
           <div class="goluri">
             <div class="goluri-stanga">
               <ul>
-                <% for(let marcator of meci.hostGoals){ %>
+                <% for(let marcator of meci.goals.host){ %>
                   <li>
-                    <%= marcator.first + " " + marcator.last + "'" %>
+                    <%= marcator.name + ' ' + marcator.time %>
                   </li>
                   <% } %>
               </ul>
             </div>
             <div class="goluri-dreapta">
               <ul>
-                <% for(let marcator of meci.visitGoals){ %>
+                <% for(let marcator of meci.goals.visit){ %>
                   <li>
-                    <%= marcator.first + " " + marcator.last + "'" %>
+                    <%= marcator.name + ' ' + marcator.time%>
                   </li>
                   <% } %>
               </ul>
             </div>
           </div>
+          <% if(meci.status){ %>
+            <div class="afisare-optiuni">
+              <button class="btn btn-dark">Events</button>
+              <button class="btn btn-dark">echipele de start</button>
+            </div>
         </div>
+        <hr>
+        <% let pauza=0 %>
+          <ul class="lists events">
+            <div class="pauza-separator">Repriza 1</div>
+            <% for(event of meci.events){ %>
+              <li>
+                <% if(!pauza && parseInt(event.time)>=46) {pauza = 1;%>
+                  <div class="pauza-separator">Repriza 2</div>
+                  <% } %>
+                    <% if(event.team=='host' ){ %>
+                      <div class="event event-host">
+                        <% }else{ %>
+                          <div class="event event-visit">
+                            <% } %>
+
+                              <% let src %>
+                                <% switch (event.type){ case 'sub' : {src="/utils/substitution.png" ; break;}
+                                  case 'yellow' : {src="/utils/yellow.png" ; break;} case 'red' : {src="/utils/red.png"
+                                  ; break;} case 'yellow-red' :{src="/utils/yellow-red.png" ; break } case 'goal' :
+                                  {src="/utils/goal.png" ; break } } %>
+                                  <span>
+                                    <%=event.time%>
+                                  </span>
+                                  <div><img src=<%=src %> alt=""></div>
+                                  <span>
+                                    <%= event.name %>
+                                      <span class="sub-off">
+                                        <% if(event.off){ %>
+                                          <%= `(${event.off})` %>
+                                            <% } %>
+                                      </span>
+                                  </span>
+                                  <% } %>
+                          </div>
+              <li>
+          </ul>
+          <!-- <ul class="lists echipe-start" style="display: none;">
+            
+          </ul> -->
+          <hr>
+          <% } %>
       </main>

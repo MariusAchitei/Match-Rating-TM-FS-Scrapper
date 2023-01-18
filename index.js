@@ -120,6 +120,7 @@ app.get('/update-values', catchAsync(async (req, res) => {
     ];
     //await addMatches(leagues[0]);
     await updateValues(leagues[0]);
+    await calculateValues();
     console.log('gata')
     res.redirect('/SuperLiga');
 }))

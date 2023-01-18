@@ -4,14 +4,14 @@ const axios = require('axios')
 const { League, Match, Player, Team } = require('./models/index.js')
 //const League = require('./models/league.js')
 
-mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
-    .then(() => {
-        console.log('Baza e sus, la dispozitia dvs.');
-    })
-    .catch((err) => {
-        console.log(err);
-        console.log('Baza e jos, verifica cablajele!');
-    })
+// mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
+//     .then(() => {
+//         console.log('Baza e sus, la dispozitia dvs.');
+//     })
+//     .catch((err) => {
+//         console.log(err);
+//         console.log('Baza e jos, verifica cablajele!');
+//     })
 
 async function createLeague(numeLiga, taraLiga, tierLiga) {
     const liga = new League({

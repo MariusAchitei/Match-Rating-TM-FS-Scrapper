@@ -13,6 +13,10 @@
             background-color: black !important;
         }
 
+        h5 a {
+            color: black
+        }
+
         .team-name {
             text-align: left;
         }
@@ -50,7 +54,9 @@
                 <div class="container mt-3 mb-5 col-10 offset-1">
                     <% for(group of groups){ %>
                         <h5>
-                            <%= group.name %>
+                            <a href="/turnaments/<%=group._id%>">
+                                <%= group.name %>
+                            </a>
                         </h5>
                         <table class="table table-dark table-hover">
                             <thead>

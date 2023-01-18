@@ -22,18 +22,30 @@ main {
 
  /* #region  TABELA DE SCOR */
 
+ .afisare-optiuni{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+ }
+
 .tabela {
     font-size: 1rem;
-    margin: 15% 0;
-    border-radius: 2rem;
-    background: #e81d1d;
+    margin: 10% 0 1% 0;
+    border-radius: 2rem 2rem 0 0;
+    background: #2C302E;
 }
 
 .competitie {
     text-align: center;
     border-radius: 2rem 2rem 0 0;
-    background-color: #37003d;
+    background-color: #5A5D5A;
     padding: 0.7rem 0;
+}
+.competitie h2 span{
+    font-size: 1.1rem;
+    color: rgb(196, 193, 193);
 }
 
 .status1 {
@@ -45,7 +57,7 @@ main {
 }
 
 .status1>div {
-    background-color: #ca0d0d;
+    background-color: #5A5D5A;
     text-align: center;
     padding: 0.3rem 1.25rem;
     border-radius: 0 0 1rem 1rem;
@@ -107,7 +119,7 @@ main {
 
 .team-logo {
     display: flex;
-    align-itrems: center;
+    align-items: center;
     justify-content: center;
     height: 50%;
     width: 50%;
@@ -120,15 +132,20 @@ main {
 }
 
 .team-logo img {
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 60%;
+    max-height: 80%;
+}
+.team-logo a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .status-ht {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #ca0d0d;
+    background-color: #5A5D5A;
     padding: 0.5rem 0;
 }
 
@@ -138,8 +155,12 @@ main {
     margin: 0 1rem;
     color: black;
     padding: 0.5rem;
-    font-size: 0.rem;
+    font-size: 0.9rem;
     font-weight: bold;
+}
+
+.status-ht>div.value{
+    background-color: rgb(121, 229, 137);
 }
 
 .status-ht>p {
@@ -167,7 +188,7 @@ main {
 }
 .tabela li{
     vertical-align: middle;
-    background: url(/jucatori/rsz_icon.png) left center no-repeat ;
+    background: url(/utils/goal.png) left center no-repeat ;
     background-size:contain;
 /* background:cover */
     padding-left:24px;
@@ -377,6 +398,46 @@ form>label{
 /*  #endregion */
 
 /* #endregion */
+
+/* .event span{
+    vertical-align: middle;
+} */
+
+.lists{
+    background-color: #2C302E;
+    padding: 0 0 4rem 0;
+    color:#eee;
+    list-style: none;
+    border-radius: 0 0 2rem 2rem;
+}
+
+.pauza-separator{
+    text-align: center;
+    color: #c8cdcd;
+    /* margin: 0.3rem; */
+    border:1px solid black;
+    background-color: #6C706C;
+}
+
+.event{
+    margin: 0.4rem 3rem 
+}
+
+.event hr{
+    border: 1px solid black;
+}
+
+.event img{
+    margin: 0 0.8rem
+}
+
+.event-host{
+    display: flex;
+}
+.event-visit{
+    display: flex;
+    flex-direction: row-reverse;
+}
 
 
 

@@ -7,23 +7,16 @@ const puppeteer = require('puppeteer')
 const { addValuePlayers } = require('./update.js')
 const { League, Match, Player, Team, Turnament, Group } = require('./models/index.js');
 const { convertDateToArrTM, convertDateToArrFS, convertMonthToNum, convertDateToArrFsShort } = require('./utils/convertDate.js')
-const { match } = require('assert');
-const team = require('./models/team.js');
-const league = require('./models/league.js');
-const player = require('./models/player.js');
-const { innerText } = require('domutils');
-const turnament = require('./models/turnament.js');
-const { group } = require('console');
 //const League = require('./models/league.js')
 
-mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
-    .then(() => {
-        console.log('Baza e sus, la dispozitia dvs.');
-    })
-    .catch((err) => {
-        console.log(err);
-        console.log('Baza e jos, verifica cablajele!');
-    })
+// mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
+//     .then(() => {
+//         console.log('Baza e sus, la dispozitia dvs.');
+//     })
+//     .catch((err) => {
+//         console.log(err);
+//         console.log('Baza e jos, verifica cablajele!');
+//     })
 
 
 async function FlashScoreTable(league) {
@@ -155,7 +148,7 @@ async function scrapeMatches(values, finalizat = 1) {
         if (finalizat) { url = url + '/#/sumar-meci/echipele-de-start' }
         console.log('//-------------', finalizat, '-------------||')
         console.log(url)
-        const skip = await Match.findOne({ url: value })
+        const skip = await Match.findOne({ $or: [{ url: value }, { url }] })
             .select('host visit visitScore hostScore').populate("visit", 'name').populate('host', 'name');
         if (skip) {
             console.log(skip.visitScore, skip.hostScore); console.log(finalizat, skip.status);
@@ -163,6 +156,7 @@ async function scrapeMatches(values, finalizat = 1) {
                 console.log('am gasit meciul', skip.host.name, skip.visit.name); continue
             }
         }
+        else console.log("am dat skip")
 
         try {
             const page = await browser.newPage()
@@ -202,11 +196,12 @@ async function scrapeMatches(values, finalizat = 1) {
                     else type = 'visitSquad'
                     players = tabele[i].children
                     for (player of players) {
-                        let status = i < 2 ? 1 : 0, card = 0 //, goals = 0
-                        const goals = player.querySelectorAll(".soccer").length
+                        let status = i < 2 ? 1 : 0, card = 0, goals = 0
+                        goals = player.querySelectorAll(".soccer").length
                         const substitution = player.querySelector(".substitution")
                         const yellow = player.querySelector(".yellowCard-ico"); yellow ? card = 1 : '';
                         const red = player.querySelector(".redCard-ico"); red ? card = 2 : ''
+                        const captain = player.querySelector(".lf__participantName>div>span:nth-of-type(2)") ? 1 : 0
 
                         if (substitution) {
                             if (i < 2) status = 2
@@ -215,9 +210,7 @@ async function scrapeMatches(values, finalizat = 1) {
                         match[type].push({
                             num: parseInt(player.firstChild.innerText),
                             name: player.querySelector('.lf__participantName div').innerText.toUpperCase(),
-                            status,
-                            card,
-                            goals
+                            status, captain, card, goals
                         })
                     }
 
@@ -234,34 +227,43 @@ async function scrapeMatches(values, finalizat = 1) {
                 // await page.exposeFunction("convertDateToArrFS", convertDateToArrFS);
 
                 match.events = await page.evaluate(() => {
-                    const events = { host: [], visit: [], cplm: 0, are: 0 }
+                    const events = []
+                    const goals = { host: [], visit: [] }
 
-                    scor = document.querySelector('.detailScore__wrapper').firstChild
-                    events.hostScore = scor.innerText; events.visitScore = scor.nextElementSibling.nextElementSibling.innerText
 
                     const eventList = document.querySelectorAll(".smv__participantRow")
                     events.count = eventList.length
 
                     for (eventEl of eventList) {
-                        let team, name, type = ''
+                        let team, name, type = '', off = '';
 
 
                         if (eventEl.classList.contains('smv__awayParticipant')) { team = 'visit' }
                         else { team = 'host'; }
 
-                        if (eventEl.querySelector(".substitution")) { name = eventEl.querySelector(".smv__playerName").innerText; type = "sub" }
-                        else name = eventEl.querySelector(".smv__playerName div") ? eventEl.querySelector(".smv__playerName div").innerText : ''
+                        if (eventEl.querySelector(".substitution")) { name = eventEl.querySelector(".smv__playerName").innerText; off = eventEl.querySelector(".smv__subDown").innerText; type = "sub" }
+                        else {
+                            name = eventEl.querySelector(".smv__playerName div") ? eventEl.querySelector(".smv__playerName div").innerText : ''
 
-                        if (eventEl.querySelector(".yellowCard-ico")) type = "yellow"
-                        if (eventEl.querySelector(".redCard-ico")) type = "red"
+                            if (eventEl.querySelector(".yellowCard-ico")) type = "yellow"
+                            else if (eventEl.querySelector(".redCard-ico")) type = "red"
+                            else if (eventEl.querySelector(".soccer")) type = "goal"
+                            else if (eventEl.querySelector(".card-ico")) type = "yellow-red"
+                        }
+
                         if (!type) continue
 
-                        events[team].push({
+                        events.push({
                             time: eventEl.querySelector(".smv__timeBox") ? eventEl.querySelector(".smv__timeBox").innerText : '',
-                            name, type
+                            name, type, team, off
                         })
+                        if (type == 'goal')
+                            goals[team].push({
+                                time: eventEl.querySelector(".smv__timeBox") ? eventEl.querySelector(".smv__timeBox").innerText : '',
+                                name
+                            })
                     }
-                    return events
+                    return { events, goals }
 
                 })
             }
@@ -283,11 +285,13 @@ async function scrapeMatches(values, finalizat = 1) {
 
 
 async function createMatchFS(match, league, visit, host) {
+
     const searchDate = {
         day: match.date.day,
         month: match.date.month,
         year: match.date.year,
     }
+
     const newMatch = new Match(
         {
             visit, host,
@@ -298,6 +302,14 @@ async function createMatchFS(match, league, visit, host) {
             etapa: match.etapa,
             url: match.url
         })
+
+    if (match.hostScore != '-') {
+        newMatch.goals = {
+            host: match.events.goals.host,
+            visit: match.events.goals.visit
+        }
+        newMatch.events = match.events.events
+    }
     await newMatch.save()
     return newMatch
 }
@@ -330,93 +342,98 @@ async function checkPlayers(players) {
 }
 
 async function addMatchesDB(matches, league) {
-    console.log(matches)
+    //console.log(matches)
     console.log('-----------------')
     for (let match of matches) {
-        const searchDate = {
-            day: match.date.day,
-            month: match.date.month,
-            year: match.date.year,
-        }
-        let visit = await Team.findOne({ $or: [{ name: match.visit }, { nameTM: match.visit }, { aliasName: match.visit }, { nameFS: match.visit }] })
-        let host = await Team.findOne({ $or: [{ name: match.host }, { nameTM: match.host }, { aliasName: match.host }, { nameFS: match.host }] })
-        // for (team of [host, visit]) {
-        if (!team) {
-            const hostId = await checkPlayers(match.hostSquad)
-            console.log('-----------', hostId, '---------')
-            if (hostId) {
-                host = await Team.findById(hostId)
-                if (host) {
-                    console.log('l am pierdut da l am gasit')
-                    host.nameFS = match.host
-                    console.log(match.host.nameFS)
-                    await host.save()
+        try {
+            const searchDate = {
+                day: match.date.day,
+                month: match.date.month,
+                year: match.date.year,
+            }
+            let visit = await Team.findOne({ $or: [{ name: match.visit }, { nameTM: match.visit }, { aliasName: match.visit }, { nameFS: match.visit }] })
+            let host = await Team.findOne({ $or: [{ name: match.host }, { nameTM: match.host }, { aliasName: match.host }, { nameFS: match.host }] })
+            // for (team of [host, visit]) {
+            if (!host) {
+                const hostId = await checkPlayers(match.hostSquad)
+                console.log('-----------', hostId, '---------')
+                if (hostId) {
+                    host = await Team.findById(hostId)
+                    if (host) {
+                        console.log('l am pierdut da l am gasit')
+                        host.nameFS = match.host
+                        console.log(match.host.nameFS)
+                        await host.save()
+                    }
+                }
+                else console.log('n am dat de el sefu')
+            }
+            // }
+            if (!visit) {
+                const visitId = await checkPlayers(match.visitSquad)
+                console.log('-----------', visitId, '---------')
+                if (visitId) {
+                    visit = await Team.findById(visitId)
+                    if (visit) {
+                        console.log('l am pierdut da l am gasit')
+                        visit.nameFS = match.visit
+                        await visit.save()
+                    }
+                }
+                else console.log('n am dat de el sefu')
+            }
+            let matchDB = await Match.findOne({ $or: [{ visit, host, league }, { visit, 'exactDate.day': searchDate.day, 'exactDate.month': searchDate.month }, { host, 'exactDate.day': searchDate.day, 'exactDate.month': searchDate.month }] }).populate('visit', '_id name url nameFS').populate('host', '_id name url nameFS')
+            if (!matchDB) {
+                console.log('N am gasit', match.host, match.visit);
+                if (visit && host)
+                    matchDB = await createMatchFS(match, league, visit, host,)
+                else { console.log('Nici n-am facut, baga tu echipele astea'); continue }
+            }
+            else {
+                if (!matchDB.url) {
+                    matchDB.url = match.url;
+                    // await matchDB.save()
+                }
+                console.log('$$$$$$$$$$$', matchDB.host.name, matchDB.visit.name)
+                if (matchDB.visitScore != match.visitScore && matchDB.hostScore != match.hostScore) {
+                    matchDB.visitScore = match.visitScore; matchDB.hostScore = match.hostScore;
+                    matchDB.goals = match.events.goals; matchDB.events = match.events.events;
                 }
             }
-            else console.log('n am dat de el sefu')
-        }
-        // }
-        if (!visit) {
-            const visitId = await checkPlayers(match.visitSquad)
-            console.log('-----------', visitId, '---------')
-            if (visitId) {
-                visit = await Team.findById(visitId)
-                if (visit) {
-                    console.log('l am pierdut da l am gasit')
-                    visit.nameFS = match.visit
-                    await visit.save()
+            // console.log(matchDB)
+            if (!host) {
+                //console.log(matchDB.host._id)
+                host = await Team.findById(matchDB.host._id)
+                console.log('--------------', matchDB.host._id)
+                host.nameFS = match.host
+                console.log(match.host.nameFS)
+                await host.save()
+            }
+            if (!visit) {
+                visit = await Team.findById(matchDB.visit._id)
+                console.log('-----------', matchDB.visit._id)
+                visit.nameFS = match.visit
+                console.log(match.visit.nameFS)
+                await visit.save()
+            }
+            if (!matchDB.visitSquad.length || !match.visitSquad.length) {
+                console.log(matchDB.visit.name, matchDB.host.name)
+                // matchDB.goals = match.goals; matchDB.events = match.events
+                for (playerDat of match.hostSquad) {
+                    let player = await Player.findOne({ $or: [{ last: { $in: playerDat.name.split(' ') }, num: playerDat.num, team: host._id }, { num: playerDat.num, team: host._id }] })
+                    if (!player) { console.log('n am dat de', playerDat.name, playerDat.num); continue }
+                    matchDB.hostSquad.push({ id: player._id, status: playerDat.status, captain: playerDat.captain, card: playerDat.card, goals: playerDat.goals })
+                }
+                for (playerDat of match.visitSquad) {
+                    const player = await Player.findOne({ $or: [{ last: { $in: playerDat.name.split(' ') }, num: playerDat.num, team: visit._id }, { num: playerDat.num, team: visit._id }] })
+                    if (!player) { console.log('n am dat de', playerDat.name, playerDat.num); continue }
+                    matchDB.visitSquad.push({ id: player._id, status: playerDat.status, captain: playerDat.captain, card: playerDat.card, goals: playerDat.goals })
                 }
             }
-            else console.log('n am dat de el sefu')
+            await matchDB.save()
+        } catch (e) {
+            console.log(e)
         }
-        let matchDB = await Match.findOne({ $or: [{ visit, host, league }, { visit, 'exactDate.day': searchDate.day, 'exactDate.month': searchDate.month }, { host, 'exactDate.day': searchDate.day, 'exactDate.month': searchDate.month }] }).populate('visit', '_id name url nameFS').populate('host', '_id name url nameFS')
-        if (!matchDB) {
-            console.log('N am gasit', match.host, match.visit);
-            if (visit && host)
-                matchDB = await createMatchFS(match, league, visit, host)
-            else { console.log('Nici n-am facut, baga tu echipele astea'); continue }
-        }
-        else {
-            if (!matchDB.url) {
-                matchDB.url = match.url;
-                // await matchDB.save()
-            }
-            console.log('$$$$$$$$$$$', matchDB.host.name, matchDB.visit.name)
-            if (matchDB.visitScore != match.visitScore && matchDB.hostScore != match.hostScore) {
-                matchDB.visitScore = match.visitScore; matchDB.hostScore = match.hostScore;
-            }
-        }
-        // console.log(matchDB)
-        if (!host) {
-            //console.log(matchDB.host._id)
-            host = await Team.findById(matchDB.host._id)
-            console.log('--------------', matchDB.host._id)
-            host.nameFS = match.host
-            console.log(match.host.nameFS)
-            await host.save()
-        }
-        if (!visit) {
-            visit = await Team.findById(matchDB.visit._id)
-            console.log('-----------', matchDB.visit._id)
-            visit.nameFS = match.visit
-            console.log(match.visit.nameFS)
-            await visit.save()
-        }
-        if (!matchDB.visitSquad.length || !match.visitSquad.length) {
-            console.log(matchDB.visit.name, matchDB.host.name)
-            for (playerDat of match.hostSquad) {
-                let player = await Player.findOne({ $or: [{ last: { $in: playerDat.name.split(' ') }, num: playerDat.num, team: host._id }, { num: playerDat.num, team: host._id }] })
-                if (!player) { console.log('n am dat de', playerDat.name, playerDat.num); continue }
-                matchDB.hostSquad.push({ id: player._id })
-            }
-            for (playerDat of match.visitSquad) {
-                const player = await Player.findOne({ $or: [{ last: { $in: playerDat.name.split(' ') }, num: playerDat.num, team: visit._id }, { num: playerDat.num, team: visit._id }] })
-                if (!player) { console.log('n am dat de', playerDat.name, playerDat.num); continue }
-                matchDB.visitSquad.push({ id: player._id })
-            }
-
-        }
-        await matchDB.save()
 
     }
 }
@@ -434,6 +451,8 @@ async function cautMeci(leagueId, leagueUrlFS) {
 
     const rezultate = await scrapeMatches(scrapeRezultate)
     const meciuri = await scrapeMatches(scrapeMeciuri, finalizat = 0)
+
+    console.log(meciuri)
 
     // console.log(rezultate)
     await addMatchesDB(meciuri, league)
@@ -516,6 +535,53 @@ async function UpdateTurnamentFS(turnament) {
     await turnament.save()
 }
 
+async function teamTotalValue(ids) {
+    let value = 0
+    if (ids.length)
+        for (id of ids) {
+            const player = await Player.findById(id).select('value');
+            if (player)
+                value += player.value
+        }
+    return value
+}
+
+async function leagueTotalValue(ids) {
+    let value = 0
+    for (id of ids) {
+        const team = await Team.findById(id).select('value');
+        if (team)
+            value += team.value
+    }
+    return value
+}
+
+async function calculateValue(leagueId = '') {
+    console.log("WOOOW", leagueId)
+    let leagues
+    if (leagueId) leagues = await League.find({ _id: leagueId }).select('teams name value')
+    else leagues = await League.find({}).select('teams name value')
+
+    // console.log('----------------------', leagues)
+
+    let i = 0
+
+    for (league of leagues) {
+        for (teamId of league.teams) {
+            team = await Team.findById(teamId).select('value squad')
+            if (team) {
+                team.value = await teamTotalValue(team.squad)
+                await team.save()
+            }
+        }
+        league.value = await leagueTotalValue(league.teams)
+        await league.save()
+    }
+
+
+
+}
+
 async function CPLM(link) {
     const bombeu = await scrapeMatches([link], 1)
     if (bombeu.length) {
@@ -523,8 +589,8 @@ async function CPLM(link) {
     }
 }
 
-const link = "https://www.flashscore.ro/meci/04xUPC2l"
-CPLM(link)
+// const link = "https://www.flashscore.ro/meci/WpCOgHKc"
+// CPLM(link)
 
 
-// module.exports = { cautMeci, UpdateTableFS, UpdateTurnamentFS }
+module.exports = { cautMeci, UpdateTableFS, UpdateTurnamentFS, calculateValue }

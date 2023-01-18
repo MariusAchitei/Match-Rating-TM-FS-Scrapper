@@ -5,18 +5,17 @@ const cors = require('cors')
 const fs = require('fs')
 
 const { League, Match, Player, Team } = require('./models/index.js')
-const player = require('./models/player.js');
-const { listenerCount } = require('./models/player.js');
 ////const League = require('./models/league.js')
 
-mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
-    .then(() => {
-        console.log('Baza e sus, la dispozitia dvs.');
-    })
-    .catch((err) => {
-        console.log(err);
-        console.log('Baza e jos, verifica cablajele!');
-    })
+// mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
+//     .then(() => {
+//         console.log('Baza e sus, la dispozitia dvs.');
+//     })
+//     .catch((err) => {
+//         console.log(err);
+//         console.log('Baza e jos, verifica cablajele!');
+//     })
+
 
 async function updateTable(leagues) {
     for (leagueFind of leagues) {
@@ -249,6 +248,24 @@ async function addMatches(league) {
     return leagueF._id
 }
 
+// async function teamTotalValue(ids) {
+//     let value = 0
+//     for (id of ids) {
+//         const player = await Player.findById(id).select(value);
+//         value += player.value
+//     }
+//     return value
+// }
+
+// async function leagueTotalValue(ids) {
+//     let value = 0
+//     for (id of ids) {
+//         const team = await Team.findById(id).select(value);
+//         value += team.value
+//     }
+//     return value
+// }
+
 function convertValueToNum(value) {
     if (value[value.length - 1] === '.') {
         value = parseInt(value.slice(1, value.length - 2))
@@ -292,7 +309,7 @@ async function addValuePlayers(echipaUrl, echipa, leagueName) {
             const logo = $('.dataBild img', html).attr('src')
             if (!echipa.logo) echipa.logo = logo;
             const divValue = $('.dataMarktwert a', html)
-            echipa.value = convertValueToNum(divValue.first().text() + divValue.text() + divValue.first().next().text())
+            // echipa.value = convertValueToNum(divValue.first().text() + divValue.text() + divValue.first().next().text())
 
             // $('.responsive-table .items>tbody>tr', html).each(async function () {
             for (let elem of $('.responsive-table .items>tbody>tr', html)) {
@@ -313,18 +330,17 @@ async function addValuePlayers(echipaUrl, echipa, leagueName) {
                         age: parseInt(data[3]) !== NaN ? parseInt(data[3]) : 0
                     }
                     let jucator
-                    if (num) {
-                        jucator = await Player.findOne({ last: { $in: nume }, num, team: echipa })
-                        if (!jucator) { jucator = await Player.findOne({ num, team: echipa }) }
-                    }
-                    else
-                        jucator = await Player.findOne({ last: { $in: nume }, team: echipa })
+                    if (num) jucator = await Player.findOne({ last: { $in: nume }, num, team: echipa });
+                    else jucator = await Player.findOne({ last: { $in: nume }, team: echipa })
+
 
                     //Daca nu am gasit jucatorul facem transfer
 
                     if (!jucator) {
+                        console.log("Nu am gasit jucatorul" + nume);
                         jucator = await Player.findOne({ last: { $in: nume }, 'born.month': born.month, 'born.year': born.year, 'born.age': born.age })
                         if (jucator) {
+                            console.log(`L am transferat pe ${nume} la ${echipa.name}`)
                             await playerTransfer(jucator, echipa, num)
                         }
                         else {
@@ -426,8 +442,9 @@ async function updateValues(leagueFind, leagueUrl) {
                 //DE FACUT adaugarea echipei in acest caz
 
                 if (!echipa) {
-                    //console.log('cal')
+                    console.log('Nu am gasit echipa' + echipa.nume);
                     if (!echipaNume) continue
+                    console.log('creez echipa' + echipa.nume);
                     echipa = new Team({ nameTM: echipaNume, name: echipaNume, league });
                     league.teams.push(echipa._id)
                     await echipa.save()
@@ -439,16 +456,22 @@ async function updateValues(leagueFind, leagueUrl) {
 
                 //Adunam valoare totala a ligii
 
-                let value = $(elem).find('td:nth-of-type(7)').text()
-                echipa.value = convertValueToNum(value)
-                leagueValue += convertValueToNum(value);
+                // let value = $(elem).find('td:nth-of-type(7)').text()
+                // echipa.value = convertValueToNum(value)
+                // echipa.updateValue(await teamTotalValue(echipa.squad))
+                //leagueValue += convertValueToNum(value);
 
                 //await echipa.save()
-                if (echipaUrl)
+                if (echipaUrl) {
+                    console.log('fac update la echipa' + echipa.name);
                     await addValuePlayers('https://www.transfermarkt.com' + echipaUrl, echipa, league.name)
+                }
             }
-            if (leagueValue)
-                league.value = leagueValue;
+
+            // league.updateValue(await leagueTotalValue(league.teams))
+
+            // if (leagueValue)
+            //     league.value = leagueValue;
             // console.log(league.teams)
             await league.save()
         }).catch(err => console.log(err));

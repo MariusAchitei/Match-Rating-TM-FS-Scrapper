@@ -5,17 +5,17 @@ const cors = require('cors')
 const fs = require('fs')
 
 const { addValuePlayers } = require('./update.js')
-const { League, Match, Player, Team, Turnament } = require('./models/index.js');
+const { League, Match, Player, Team, Group } = require('./models/index.js');
 const puppeteer = require('puppeteer')
 
-mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
-    .then(() => {
-        console.log('Baza e sus, la dispozitia dvs.');
-    })
-    .catch((err) => {
-        console.log(err);
-        console.log('Baza e jos, verifica cablajele!');
-    })
+// mongoose.connect('mongodb://127.0.0.1:27017/Ratings', { useNewUrlParser: true })
+//     .then(() => {
+//         console.log('Baza e sus, la dispozitia dvs.');
+//     })
+//     .catch((err) => {
+//         console.log(err);
+//         console.log('Baza e jos, verifica cablajele!');
+//     })
 
 function photo() {
     axios('https://www.transfermarkt.com/real-madrid/startseite/verein/418')
@@ -128,7 +128,32 @@ async function cas(link) {
 
 }
 
-cas("https://www.flashscore.ro/meci/04xUPC2l/#/sumar-meci/sumar-meci")
+async function removeFromGroup(groupId, teamId) {
+    const group = await Group.findById(groupId)
+    for (i = 0; i < group.teams.length; i++) {
+        if (group.teams[i].id == teamId)
+            group.teams.splice(i, 1)
+    }
+    await group.save()
+}
 
+async function updateTeamValue() {
+    let teams = await Team.find({}).select('squad').populate('squad', 'value')
+    for (team of teams) {
+        value = 0
+        for (player of team.squad) {
+            console.log(player.value)
+            if (player.value != "NaN")
+                value += player.value
+        }
+        team.value = value
+        await team.save()
+    }
+}
 
+async function updateLeagueValue() {
+    let
+}
+
+updateTeamValue()
 
