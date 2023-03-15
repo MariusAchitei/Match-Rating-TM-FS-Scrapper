@@ -34,7 +34,7 @@
     <% } else { jucatori = meci.visitSquad }%>
       <h5 style="color: black">(<%= jucatori.length %>) </h5>
     <% for(let jucator of jucatori){ %>  
-      <% if(!jucator.status) continue %>  
+      <% if(!jucator.status || !jucator || !jucator.id) continue %>  
     <%if(jucator.id.position === "Portar" ) { %>
       <div class="profil jucator portar">
     <% } else if(jucator.id.pozitie === "AN") { %>
@@ -46,7 +46,7 @@
       <div class="profil-imagine">
         <div class="poza">
           <div class="pozitie"> 
-            <span><%= jucator.status %></span>
+            <span><%= jucator.id.position %></span>
           </div>
           <img src= "<%= jucator.id.photo %>" />
         </div>

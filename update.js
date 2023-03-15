@@ -341,7 +341,8 @@ async function addValuePlayers(echipaUrl, echipa, leagueName) {
         .then(async (res) => {
             const html = res.data
             const $ = cheerio.load(html)
-            const logo = $('.dataBild img', html).attr('src')
+            const logo = $('#main > main > header > div.data-header__profile-container > img', html).attr('src')
+            console.log(`LOGO: "${echipa.logo}" || "${logo}"`);
             if (!echipa.logo) echipa.logo = logo;
 
             for (let playerRow of $('.responsive-table .items>tbody>tr', html)) {
@@ -358,14 +359,14 @@ async function addValuePlayers(echipaUrl, echipa, leagueName) {
                     //Daca nu am gasit jucatorul facem transfer
 
                     if (!jucator) {
-                        console.log("Nu am gasit jucatorul" + nume);
+                        console.log("Nu am gasit jucatorul " + nume);
                         jucator = await Player.findOne({ last: { $in: nume }, 'born.month': born.month, 'born.year': born.year, 'born.age': born.age })
                         if (jucator) {
                             console.log(`L am transferat pe ${nume} la ${echipa.name}`)
                             await playerTransfer(jucator, echipa, numar)
                         }
                         else {
-                            console.log("creez noul jucator" + nume);
+                            console.log("creez noul jucator " + nume);
                             jucator = new Player({
                                 last: nume[1] ? nume[1] : nume[0],
                                 first: nume[1] ? nume[0] : '',
@@ -436,6 +437,9 @@ async function updateValues(leagueFind, leagueUrl) {
 
 
     let leagueValue = 0
+    console.log("-------------------------\n -----------------------\n")
+    console.log(league.url);
+    console.log("-------------------------------\n-----------------------\n")
     axios(league.url)
         .then(async (res) => {
             console.log(league.url)
@@ -460,9 +464,9 @@ async function updateValues(leagueFind, leagueUrl) {
                 //DE FACUT adaugarea echipei in acest caz
 
                 if (!echipa) {
-                    console.log('Nu am gasit echipa' + echipa.nume);
+                    console.log('Nu am gasit echipa ' + echipaNume);
                     if (!echipaNume) continue
-                    console.log('creez echipa' + echipa.nume);
+                    console.log('creez echipa' + echipaNume);
                     echipa = new Team({ nameTM: echipaNume, name: echipaNume, league });
                     league.teams.push(echipa._id)
                     await echipa.save()
