@@ -12,9 +12,15 @@ The server implemneted in Node js using express, I used MongoDB as the database 
 
 ## Screenshots
 
+## The Match section
+![screenshot](./public/screenshots/match.png)
+
 ## The Rating section
 ![screenshot](./public/screenshots/rating-section.png)
 
 ## The Show Club section
 ![screenshot](./public/screenshots/club.png)
+
+## The League Table section
+![screenshot](./public/screenshots/table.png)
 
